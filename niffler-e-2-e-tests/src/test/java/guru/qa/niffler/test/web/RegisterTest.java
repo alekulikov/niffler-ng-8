@@ -16,25 +16,35 @@ public class RegisterTest {
 
   @Test
   void shouldRegisterNewUser() {
+    String username = faker.name().firstName();
+    String password = faker.internet().password(4, 8);
+
     Selenide.open(CFG.frontUrl(), LoginPage.class)
         .goRegisterPage()
-        .doRegister(faker.name().username(), faker.internet().password(4, 8))
+        .doRegister(username, password, password)
         .checkMessageText("Congratulations! You've registered!");
   }
 
   @Test
   void shouldNotRegisterUserWithExistingUsername() {
+    String username = "duck";
+    String password = faker.internet().password(4, 8);
+
     Selenide.open(CFG.frontUrl(), LoginPage.class)
         .goRegisterPage()
-        .doRegister("duck", faker.internet().password(4, 8))
+        .doRegister(username, password, password)
         .checkErrorMessageText("Username `duck` already exists");
   }
 
   @Test
   void shouldShowErrorIfPasswordAndConfirmPasswordAreNotEqual() {
+    String username = faker.name().firstName();
+    String password = faker.internet().password(4, 8);
+    String confirmPassword = faker.internet().password(4, 8);
+
     Selenide.open(CFG.frontUrl(), LoginPage.class)
         .goRegisterPage()
-        .doRegister(faker.name().username(), faker.internet().password(4, 8), faker.internet().password(4, 8))
+        .doRegister(username, password, confirmPassword)
         .checkErrorMessageText("Passwords should be equal");
   }
 }

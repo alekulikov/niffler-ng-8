@@ -14,14 +14,6 @@ public class RegisterPage {
   private final SelenideElement message = $("p.form__paragraph_success");
   private final SelenideElement errorMessage = $("span.form__error");
 
-  public RegisterPage doRegister(String username, String password) {
-    usernameInput.setValue(username);
-    passwordInput.setValue(password);
-    passwordConfirmInput.setValue(password);
-    submitBtn.click();
-    return this;
-  }
-
   public RegisterPage doRegister(String username, String password, String passwordConfirm) {
     usernameInput.setValue(username);
     passwordInput.setValue(password);
