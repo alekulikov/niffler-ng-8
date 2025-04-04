@@ -58,7 +58,6 @@ public class UsersQueueExtension implements
       case WITH_OUTCOME_REQUEST -> WITH_OUTCOME_REQUEST_USERS;
     };
   }
-  }
 
   @Override
   @SuppressWarnings("unchecked")
@@ -109,6 +108,7 @@ public class UsersQueueExtension implements
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public StaticUser resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
     return ((Map<UserType, StaticUser>) extensionContext.getStore(NAMESPACE)
         .get(extensionContext.getUniqueId()))
