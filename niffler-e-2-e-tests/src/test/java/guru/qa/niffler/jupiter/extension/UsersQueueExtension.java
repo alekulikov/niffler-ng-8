@@ -58,11 +58,13 @@ public class UsersQueueExtension implements
       case WITH_OUTCOME_REQUEST -> WITH_OUTCOME_REQUEST_USERS;
     };
   }
+  }
 
   @Override
+  @SuppressWarnings("unchecked")
   public void beforeTestExecution(ExtensionContext context) {
     Arrays.stream(context.getRequiredTestMethod().getParameters())
-        .filter(p -> AnnotationSupport.isAnnotated(p, UserType.class))
+        .filter(p -> AnnotationSupport.isAnnotated(p, UserType.class) && p.getType().isAssignableFrom(StaticUser.class))
         .map(p -> p.getAnnotation(UserType.class))
         .forEach(ut -> {
           Optional<StaticUser> user = Optional.empty();
@@ -87,6 +89,7 @@ public class UsersQueueExtension implements
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public void afterTestExecution(ExtensionContext context) {
     ((Map<UserType, StaticUser>) context.getStore(NAMESPACE)
         .getOrDefault(

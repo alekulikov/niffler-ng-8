@@ -42,5 +42,4 @@ public class FriendsPage {
         .shouldHave(text("Waiting..."));
     return this;
   }
-
 }
