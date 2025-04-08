@@ -11,7 +11,7 @@ import static guru.qa.niffler.jupiter.extension.UsersQueueExtension.UserType;
 import static guru.qa.niffler.jupiter.extension.UsersQueueExtension.UserType.Type.*;
 
 @WebTest
-public class FriendsWebTest {
+public class FriendsTest {
 
   private static final Config CFG = Config.getInstance();
 
