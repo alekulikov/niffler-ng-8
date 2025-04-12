@@ -32,7 +32,8 @@ public class SpendingTest {
     Selenide.open(CFG.frontUrl(), LoginPage.class)
         .doLogin("duck", "12345")
         .editSpending(spend.description())
-        .editDescription(newDescription);
+        .editDescription(newDescription)
+        .save();
 
     new MainPage().checkThatTableContains(newDescription);
   }
