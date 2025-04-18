@@ -42,7 +42,7 @@ public class JdbcTest {
   void xaTxTest() {
     UserDbClient userDbClient = new UserDbClient();
 
-    userDbClient.createUser(
+    UserDataJson user = userDbClient.createUser(
         new UserAuthJson(
             null,
             randomUsername(),
@@ -63,5 +63,25 @@ public class JdbcTest {
             null
         )
     );
+
+    System.out.println(user);
+  }
+
+  @Test
+  void springJdbcTest() {
+    UserDbClient usersDbClient = new UserDbClient();
+    UserDataJson user = usersDbClient.createUserSpringJdbc(
+        new UserDataJson(
+            null,
+            "valentin-5",
+            CurrencyValues.RUB,
+            null,
+            null,
+            null,
+            null,
+            null
+        )
+    );
+    System.out.println(user);
   }
 }

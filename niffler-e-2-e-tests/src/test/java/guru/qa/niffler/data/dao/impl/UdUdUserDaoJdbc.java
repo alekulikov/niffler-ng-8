@@ -1,23 +1,22 @@
 package guru.qa.niffler.data.dao.impl;
 
-import guru.qa.niffler.data.Databases;
-import guru.qa.niffler.data.dao.UserDao;
+import guru.qa.niffler.data.dao.UdUserDao;
 import guru.qa.niffler.data.entity.userdata.UserEntity;
 
 import java.sql.*;
 import java.util.Optional;
 import java.util.UUID;
 
-public class UserDaoJdbc implements UserDao {
+public class UdUdUserDaoJdbc implements UdUserDao {
 
   private final Connection connection;
 
-  public UserDaoJdbc(Connection connection) {
+  public UdUdUserDaoJdbc(Connection connection) {
     this.connection = connection;
   }
 
   @Override
-  public UserEntity createUser(UserEntity user) {
+  public UserEntity create(UserEntity user) {
     try (PreparedStatement ps = connection.prepareStatement(
         """
             INSERT INTO "user" (username, currency, firstname, surname, photo, photo_small, full_name)
