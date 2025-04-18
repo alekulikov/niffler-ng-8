@@ -13,11 +13,11 @@ import java.sql.Statement;
 import java.util.Optional;
 import java.util.UUID;
 
-public class UdUserDaoCopySpringJdbc implements UdUserDao {
+public class UdUserDaoSpringJdbc implements UdUserDao {
 
   private final DataSource dataSource;
 
-  public UdUserDaoCopySpringJdbc(DataSource dataSource) {
+  public UdUserDaoSpringJdbc(DataSource dataSource) {
     this.dataSource = dataSource;
   }
 

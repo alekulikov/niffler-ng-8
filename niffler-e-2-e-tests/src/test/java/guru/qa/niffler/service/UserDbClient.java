@@ -47,7 +47,7 @@ public class UserDbClient {
         .create(authorityEntities);
 
     return UserDataJson.fromEntity(
-        new UdUserDaoCopySpringJdbc(dataSource(CFG.userdataJdbcUrl()))
+        new UdUserDaoSpringJdbc(dataSource(CFG.userdataJdbcUrl()))
             .create(
                 guru.qa.niffler.data.entity.userdata.UserEntity.fromJson(user)
             )
