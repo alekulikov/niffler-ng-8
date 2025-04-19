@@ -117,4 +117,32 @@ public class SpendDaoJdbc implements SpendDao {
       throw new RuntimeException(e);
     }
   }
+
+  @Override
+  public List<SpendEntity> findAll() {
+    try (PreparedStatement ps = connection.prepareStatement("SELECT * FROM spend")) {
+      ps.execute();
+      List<SpendEntity> spendEntities = new ArrayList<>();
+      try (ResultSet rs = ps.getResultSet()) {
+        while (rs.next()) {
+          CategoryDao categoryDao = new CategoryDaoJdbc(connection);
+          SpendEntity se = new SpendEntity();
+          CategoryEntity ce = categoryDao
+              .findCategoryById(rs.getObject("category_id", UUID.class))
+              .orElseThrow(() -> new SQLException("Can`t find category in Spend"));
+          se.setId(rs.getObject("id", UUID.class));
+          se.setUsername(rs.getString("username"));
+          se.setSpendDate(rs.getDate("spend_date"));
+          se.setCurrency(CurrencyValues.valueOf(rs.getString("currency")));
+          se.setAmount(rs.getDouble("amount"));
+          se.setDescription(rs.getString("description"));
+          se.setCategory(ce);
+          spendEntities.add(se);
+        }
+      }
+      return spendEntities;
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
 }
