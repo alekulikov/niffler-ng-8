@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Date;
 
+import static guru.qa.niffler.utils.RandomDataUtils.randomCategoryName;
 import static guru.qa.niffler.utils.RandomDataUtils.randomUsername;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 
@@ -83,5 +84,41 @@ public class JdbcTest {
         )
     );
     System.out.println(user);
+  }
+
+  @Test
+  void categorySpringJdbcTest() {
+    SpendDbClient spendDbClient = new SpendDbClient();
+    CategoryJson category = spendDbClient.createCategory(
+        new CategoryJson(
+            null,
+            randomCategoryName() + "-springJdbc",
+            "duck",
+            true
+        )
+    );
+    System.out.println(category);
+  }
+
+  @Test
+  void spendSpringJdbcTest() {
+    SpendDbClient spendDbClient = new SpendDbClient();
+    SpendJson spend = spendDbClient.createSpend(
+        new SpendJson(
+            null,
+            new Date(),
+            new CategoryJson(
+                null,
+                "Образование",
+                "duck",
+                false
+            ),
+            CurrencyValues.RUB,
+            1000.0,
+            "spend-name-springJdbc",
+            null
+        )
+    );
+    System.out.println(spend);
   }
 }
