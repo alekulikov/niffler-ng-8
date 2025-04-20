@@ -1,12 +1,15 @@
 package guru.qa.niffler.data.dao.impl;
 
 import guru.qa.niffler.data.dao.AuthAuthorityDao;
+import guru.qa.niffler.data.dao.AuthUserDao;
+import guru.qa.niffler.data.entity.auth.Authority;
 import guru.qa.niffler.data.entity.auth.AuthorityEntity;
+import guru.qa.niffler.data.entity.auth.UserEntity;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
 
@@ -29,6 +32,29 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
         ps.clearParameters();
       }
       ps.executeBatch();
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Override
+  public List<AuthorityEntity> findAll() {
+    try (PreparedStatement ps = connection.prepareStatement("SELECT * FROM authority")) {
+      ps.execute();
+      List<AuthorityEntity> authorities = new ArrayList<>();
+      try (ResultSet rs = ps.executeQuery()) {
+        while (rs.next()) {
+          AuthUserDao authUserDao = new AuthUserDaoJdbc(connection);
+          AuthorityEntity ae = new AuthorityEntity();
+          UserEntity ue = authUserDao.findById(rs.getObject("user_id", UUID.class))
+              .orElseThrow(() -> new SQLException("Can`t find user in Authority"));
+          ae.setId(rs.getObject("id", UUID.class));
+          ae.setUser(ue);
+          ae.setAuthority(Authority.valueOf(rs.getString("authority")));
+          authorities.add(ae);
+        }
+      }
+      return authorities;
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
