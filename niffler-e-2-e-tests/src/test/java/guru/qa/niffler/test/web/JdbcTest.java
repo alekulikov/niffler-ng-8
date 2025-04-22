@@ -1,61 +1,27 @@
 package guru.qa.niffler.test.web;
 
-import guru.qa.niffler.model.*;
+import guru.qa.niffler.model.CategoryJson;
+import guru.qa.niffler.model.CurrencyValues;
+import guru.qa.niffler.model.SpendJson;
+import guru.qa.niffler.model.UserDataJson;
 import guru.qa.niffler.service.SpendDbClient;
 import guru.qa.niffler.service.UserDbClient;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Date;
 
 import static guru.qa.niffler.utils.RandomDataUtils.randomCategoryName;
 import static guru.qa.niffler.utils.RandomDataUtils.randomUsername;
-import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 
-@Disabled
 public class JdbcTest {
 
   @Test
-  void txTest() {
-    SpendDbClient spendDbClient = new SpendDbClient();
-
-    assertThrowsExactly(RuntimeException.class, () -> spendDbClient.createSpend
-        (
-            new SpendJson(
-                null,
-                new Date(),
-                new CategoryJson(
-                    null,
-                    "cat-name-tx-2",
-                    "duck",
-                    false
-                ),
-                CurrencyValues.RUB,
-                1000.0,
-                "spend-name-tx",
-                null
-            )
-        )
-    );
-  }
-
-  @Test
-  void xaTxTest() {
+  void userJdbcTest() {
     UserDbClient userDbClient = new UserDbClient();
-
     UserDataJson user = userDbClient.createUser(
-        new UserAuthJson(
-            null,
-            randomUsername(),
-            "12345",
-            true,
-            true,
-            true,
-            true
-        ),
         new UserDataJson(
             null,
-            "duck",
+            randomUsername() + "-jdbc",
             CurrencyValues.EUR,
             "",
             "",
@@ -69,12 +35,12 @@ public class JdbcTest {
   }
 
   @Test
-  void springJdbcTest() {
+  void userSpringJdbcTest() {
     UserDbClient usersDbClient = new UserDbClient();
     UserDataJson user = usersDbClient.createUserSpringJdbc(
         new UserDataJson(
             null,
-            "valentin-5",
+            randomUsername() + "-springJdbc",
             CurrencyValues.RUB,
             null,
             null,
@@ -87,9 +53,23 @@ public class JdbcTest {
   }
 
   @Test
-  void categorySpringJdbcTest() {
+  void categoryJdbcTest() {
     SpendDbClient spendDbClient = new SpendDbClient();
     CategoryJson category = spendDbClient.createCategory(
+        new CategoryJson(
+            null,
+            randomCategoryName() + "-jdbc",
+            "duck",
+            true
+        )
+    );
+    System.out.println(category);
+  }
+
+  @Test
+  void categorySpringJdbcTest() {
+    SpendDbClient spendDbClient = new SpendDbClient();
+    CategoryJson category = spendDbClient.createCategorySpringJdbc(
         new CategoryJson(
             null,
             randomCategoryName() + "-springJdbc",
@@ -101,7 +81,7 @@ public class JdbcTest {
   }
 
   @Test
-  void spendSpringJdbcTest() {
+  void spendJdbcTest() {
     SpendDbClient spendDbClient = new SpendDbClient();
     SpendJson spend = spendDbClient.createSpend(
         new SpendJson(
@@ -115,10 +95,33 @@ public class JdbcTest {
             ),
             CurrencyValues.RUB,
             1000.0,
-            "spend-name-springJdbc",
-            null
+            "spend-name-jdbc",
+            "duck"
         )
     );
+    System.out.println(spend);
+  }
+
+  @Test
+  void spendSpringJdbcTest() {
+    SpendDbClient spendDbClient = new SpendDbClient();
+    SpendJson spend = spendDbClient.createSpendSpringJdbc(
+        new SpendJson(
+            null,
+            new Date(),
+            new CategoryJson(
+                null,
+                "Образование",
+                "duck",
+                false
+            ),
+            CurrencyValues.RUB,
+            1000.0,
+            "spend-name-springJdbc",
+            "duck"
+        )
+    );
+
     System.out.println(spend);
   }
 }
