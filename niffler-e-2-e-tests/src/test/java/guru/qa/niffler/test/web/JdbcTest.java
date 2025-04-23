@@ -124,4 +124,31 @@ public class JdbcTest {
 
     System.out.println(spend);
   }
+
+  /**
+   * Используя ChainedTransactionManager не получится откатить внутреннюю транзакцию при сбое во внешней,
+   * так как вызывается метод reverse() и commit() выполняется в обратном порядке, а двойное подтверждение в
+   * этом механизме отсутствует. Это означает, что для внутренней транзакции уже может быть выполнен commit(), когда
+   * во внешней будет выброшено исключение, и откатить внутреннюю уже не получится. Корректно откатить все изменения
+   * получится только если сбой произойдет в самой последней транзакции. На случай ошибки предусмотрен выброс
+   * исключения HeuristicCompletionException, которое может иметь состояние STATE_ROLLED_BACK (произошел откат всех
+   * транзакций) и STATE_MIXED (произошла ошибка не в самой последней транзакции и данные не консистентны).
+   **/
+  @Test
+  void userSpringJdbcChainedTrxTest() {
+    UserDbClient usersDbClient = new UserDbClient();
+    UserDataJson user = usersDbClient.createUserSpringJdbcChainedTrx(
+        new UserDataJson(
+            null,
+            randomUsername() + "-springJdbcChainedTrx",
+            CurrencyValues.RUB,
+            null,
+            null,
+            null,
+            null,
+            null
+        )
+    );
+    System.out.println(user);
+  }
 }
