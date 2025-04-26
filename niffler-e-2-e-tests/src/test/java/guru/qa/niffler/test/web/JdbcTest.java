@@ -27,6 +27,7 @@ public class JdbcTest {
             "",
             "",
             null,
+            null,
             null
         )
     );
@@ -42,6 +43,7 @@ public class JdbcTest {
             null,
             randomUsername() + "-springJdbc",
             CurrencyValues.RUB,
+            null,
             null,
             null,
             null,
@@ -142,6 +144,7 @@ public class JdbcTest {
             null,
             randomUsername() + "-springJdbcChainedTrx",
             CurrencyValues.RUB,
+            null,
             null,
             null,
             null,

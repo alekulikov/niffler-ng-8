@@ -8,6 +8,8 @@ import guru.qa.niffler.data.dao.impl.*;
 import guru.qa.niffler.data.entity.auth.Authority;
 import guru.qa.niffler.data.entity.auth.AuthorityEntity;
 import guru.qa.niffler.data.entity.auth.UserEntity;
+import guru.qa.niffler.data.repository.AuthUserRepository;
+import guru.qa.niffler.data.repository.impl.AuthUserRepositoryJdbc;
 import guru.qa.niffler.data.tpl.DataSources;
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.model.UserDataJson;
@@ -30,6 +32,7 @@ public class UserDbClient {
   private final AuthUserDao authUserDao = new AuthUserDaoJdbc();
   private final AuthAuthorityDao authAuthorityDao = new AuthAuthorityDaoJdbc();
   private final UdUserDao udUserDao = new UdUserDaoJdbc();
+  private final AuthUserRepository authUserRepository = new AuthUserRepositoryJdbc();
 
   private final XaTransactionTemplate xaTransactionTemplate = new XaTransactionTemplate(
       CFG.authJdbcUrl(),
@@ -67,7 +70,8 @@ public class UserDbClient {
           authAuthorityDaoSpring.create(authorityEntities);
 
           return UserDataJson.fromEntity(
-              udUserDaoSpring.create(guru.qa.niffler.data.entity.userdata.UserEntity.fromJson(user)));
+              udUserDaoSpring.create(guru.qa.niffler.data.entity.userdata.UserEntity.fromJson(user)),
+              null);
         }
     );
   }
@@ -96,7 +100,8 @@ public class UserDbClient {
           authAuthorityDao.create(authorityEntities);
 
           return UserDataJson.fromEntity(
-              udUserDao.create(guru.qa.niffler.data.entity.userdata.UserEntity.fromJson(user)));
+              udUserDao.create(guru.qa.niffler.data.entity.userdata.UserEntity.fromJson(user)),
+              null);
         }
     );
   }
@@ -125,7 +130,35 @@ public class UserDbClient {
       authAuthorityDaoSpring.create(authorityEntities);
 
       return UserDataJson.fromEntity(
-          udUserDaoSpring.create(guru.qa.niffler.data.entity.userdata.UserEntity.fromJson(user)));
+          udUserDaoSpring.create(guru.qa.niffler.data.entity.userdata.UserEntity.fromJson(user)),
+          null);
     });
+  }
+
+  public UserDataJson createUserRepositoryJdbc(UserDataJson user) {
+    return xaTransactionTemplate.execute(() -> {
+          UserEntity authUser = new UserEntity();
+          authUser.setUsername(user.username());
+          authUser.setPassword(pe.encode("12345"));
+          authUser.setEnabled(true);
+          authUser.setAccountNonExpired(true);
+          authUser.setAccountNonLocked(true);
+          authUser.setCredentialsNonExpired(true);
+          authUser.setAuthorities(
+              Arrays.stream(Authority.values()).map(
+                  e -> {
+                    AuthorityEntity ae = new AuthorityEntity();
+                    ae.setUser(authUser);
+                    ae.setAuthority(e);
+                    return ae;
+                  }
+              ).toList()
+          );
+          authUserRepository.create(authUser);
+          return UserDataJson.fromEntity(
+              udUserDao.create(guru.qa.niffler.data.entity.userdata.UserEntity.fromJson(user)),
+              null);
+        }
+    );
   }
 }
