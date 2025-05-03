@@ -2,7 +2,7 @@ package guru.qa.niffler.data.dao.impl;
 
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.UdUserDao;
-import guru.qa.niffler.data.entity.userdata.UserEntity;
+import guru.qa.niffler.data.entity.userdata.UdUserEntity;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -20,7 +20,7 @@ public class UdUserDaoJdbc implements UdUserDao {
   private static final Config CFG = Config.getInstance();
 
   @Override
-  public UserEntity create(UserEntity user) {
+  public UdUserEntity create(UdUserEntity user) {
     try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
         """
             INSERT INTO "user" (username, currency, firstname, surname, photo, photo_small, full_name)
@@ -50,7 +50,7 @@ public class UdUserDaoJdbc implements UdUserDao {
   }
 
   @Override
-  public Optional<UserEntity> findById(UUID id) {
+  public Optional<UdUserEntity> findById(UUID id) {
     try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
         "SELECT * FROM \"user\" WHERE id = ?"
     )) {
@@ -58,7 +58,7 @@ public class UdUserDaoJdbc implements UdUserDao {
       ps.execute();
       try (ResultSet rs = ps.getResultSet()) {
         if (rs.next()) {
-          UserEntity user = new UserEntity();
+          UdUserEntity user = new UdUserEntity();
           user.setId(rs.getObject("id", UUID.class));
           user.setUsername(rs.getString("username"));
           user.setFirstname(rs.getString("firstname"));
@@ -76,7 +76,7 @@ public class UdUserDaoJdbc implements UdUserDao {
   }
 
   @Override
-  public Optional<UserEntity> findByUsername(String username) {
+  public Optional<UdUserEntity> findByUsername(String username) {
     try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
         "SELECT * FROM \"user\" WHERE username = ?"
     )) {
@@ -84,7 +84,7 @@ public class UdUserDaoJdbc implements UdUserDao {
       ps.execute();
       try (ResultSet rs = ps.getResultSet()) {
         if (rs.next()) {
-          UserEntity user = new UserEntity();
+          UdUserEntity user = new UdUserEntity();
           user.setId(rs.getObject("id", UUID.class));
           user.setUsername(rs.getString("username"));
           user.setFirstname(rs.getString("firstname"));
@@ -102,7 +102,7 @@ public class UdUserDaoJdbc implements UdUserDao {
   }
 
   @Override
-  public void delete(UserEntity user) {
+  public void delete(UdUserEntity user) {
     try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
         "DELETE FROM \"user\" WHERE id = ?"
     )) {
@@ -114,15 +114,15 @@ public class UdUserDaoJdbc implements UdUserDao {
   }
 
   @Override
-  public List<UserEntity> findAll() {
+  public List<UdUserEntity> findAll() {
     try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
         "SELECT * FROM \"user\""
     )) {
       ps.execute();
-      List<UserEntity> users = new ArrayList<>();
+      List<UdUserEntity> users = new ArrayList<>();
       try (ResultSet rs = ps.getResultSet()) {
         while (rs.next()) {
-          UserEntity ue = new UserEntity();
+          UdUserEntity ue = new UdUserEntity();
           ue.setId(rs.getObject("id", UUID.class));
           ue.setUsername(rs.getString("username"));
           ue.setFirstname(rs.getString("firstname"));

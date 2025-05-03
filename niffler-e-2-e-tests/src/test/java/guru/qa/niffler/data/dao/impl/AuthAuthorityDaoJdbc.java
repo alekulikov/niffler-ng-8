@@ -5,7 +5,7 @@ import guru.qa.niffler.data.dao.AuthAuthorityDao;
 import guru.qa.niffler.data.dao.AuthUserDao;
 import guru.qa.niffler.data.entity.auth.Authority;
 import guru.qa.niffler.data.entity.auth.AuthorityEntity;
-import guru.qa.niffler.data.entity.auth.UserEntity;
+import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -50,7 +50,7 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
         while (rs.next()) {
           AuthUserDao authUserDao = new AuthUserDaoJdbc();
           AuthorityEntity ae = new AuthorityEntity();
-          UserEntity ue = authUserDao.findById(rs.getObject("user_id", UUID.class))
+          AuthUserEntity ue = authUserDao.findById(rs.getObject("user_id", UUID.class))
               .orElseThrow(() -> new SQLException("Can`t find user in Authority"));
           ae.setId(rs.getObject("id", UUID.class));
           ae.setUser(ue);

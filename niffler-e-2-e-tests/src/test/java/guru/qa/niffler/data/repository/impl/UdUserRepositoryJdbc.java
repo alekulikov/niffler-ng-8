@@ -2,7 +2,7 @@ package guru.qa.niffler.data.repository.impl;
 
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.entity.userdata.FriendshipStatus;
-import guru.qa.niffler.data.entity.userdata.UserEntity;
+import guru.qa.niffler.data.entity.userdata.UdUserEntity;
 import guru.qa.niffler.data.mapper.UdUserEntityResultSetExtractor;
 import guru.qa.niffler.data.repository.UdUserRepository;
 
@@ -18,7 +18,7 @@ public class UdUserRepositoryJdbc implements UdUserRepository {
   private static final Config CFG = Config.getInstance();
 
   @Override
-  public UserEntity create(UserEntity user) {
+  public UdUserEntity create(UdUserEntity user) {
     try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
         """
             INSERT INTO "user" (username, currency, firstname, surname, photo, photo_small, full_name)
@@ -48,7 +48,7 @@ public class UdUserRepositoryJdbc implements UdUserRepository {
   }
 
   @Override
-  public Optional<UserEntity> findById(UUID id) {
+  public Optional<UdUserEntity> findById(UUID id) {
     try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
         """
             SELECT * FROM "user" u left join friendship f
@@ -67,7 +67,7 @@ public class UdUserRepositoryJdbc implements UdUserRepository {
   }
 
   @Override
-  public Optional<UserEntity> findByUsername(String username) {
+  public Optional<UdUserEntity> findByUsername(String username) {
     try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
         """
             SELECT * FROM "user" u left join friendship f
@@ -86,7 +86,7 @@ public class UdUserRepositoryJdbc implements UdUserRepository {
   }
 
   @Override
-  public void delete(UserEntity user) {
+  public void delete(UdUserEntity user) {
     try (PreparedStatement userPs = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
         "DELETE FROM \"user\" WHERE id = ?");
          PreparedStatement friendshipPs = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
@@ -103,7 +103,7 @@ public class UdUserRepositoryJdbc implements UdUserRepository {
   }
 
   @Override
-  public List<UserEntity> findAll() {
+  public List<UdUserEntity> findAll() {
     try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
         """
             SELECT * FROM "user" u left join friendship f
@@ -119,7 +119,7 @@ public class UdUserRepositoryJdbc implements UdUserRepository {
   }
 
   @Override
-  public void addIncomeInvitation(UserEntity requester, UserEntity addressee) {
+  public void sendInvitation(UdUserEntity requester, UdUserEntity addressee) {
     try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
         """
             INSERT INTO friendship (requester_id, addressee_id, status, created_date)
@@ -137,12 +137,7 @@ public class UdUserRepositoryJdbc implements UdUserRepository {
   }
 
   @Override
-  public void addOutcomeInvitation(UserEntity requester, UserEntity addressee) {
-    addIncomeInvitation(requester, addressee);
-  }
-
-  @Override
-  public void addFriend(UserEntity requester, UserEntity addressee) {
+  public void addFriend(UdUserEntity requester, UdUserEntity addressee) {
     try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
         """
             INSERT INTO friendship (requester_id, addressee_id, status, created_date)
@@ -165,5 +160,15 @@ public class UdUserRepositoryJdbc implements UdUserRepository {
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  @Override
+  public UdUserEntity update(UdUserEntity user) {
+    throw new UnsupportedOperationException("not implemented");
+  }
+
+  @Override
+  public void remove(UdUserEntity user) {
+    throw new UnsupportedOperationException("not implemented");
   }
 }

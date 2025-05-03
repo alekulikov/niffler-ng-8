@@ -1,6 +1,6 @@
 package guru.qa.niffler.test.web;
 
-import guru.qa.niffler.data.entity.userdata.UserEntity;
+import guru.qa.niffler.data.entity.userdata.UdUserEntity;
 import guru.qa.niffler.data.repository.AuthUserRepository;
 import guru.qa.niffler.data.repository.UdUserRepository;
 import guru.qa.niffler.data.repository.impl.AuthUserRepositoryJdbc;
@@ -12,7 +12,7 @@ import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.model.UserDataJson;
 import guru.qa.niffler.service.SpendDbClient;
-import guru.qa.niffler.service.UserDbClient;
+import guru.qa.niffler.service.UsersDbClient;
 import org.junit.jupiter.api.Test;
 
 import java.util.Date;
@@ -24,8 +24,8 @@ public class JdbcTest {
 
   @Test
   void userJdbcTest() {
-    UserDbClient userDbClient = new UserDbClient();
-    UserDataJson user = userDbClient.createUser(
+    UsersDbClient usersDbClient = new UsersDbClient();
+    UserDataJson user = usersDbClient.createUser(
         new UserDataJson(
             null,
             randomUsername() + "-jdbc",
@@ -44,7 +44,7 @@ public class JdbcTest {
 
   @Test
   void userSpringJdbcTest() {
-    UserDbClient usersDbClient = new UserDbClient();
+    UsersDbClient usersDbClient = new UsersDbClient();
     UserDataJson user = usersDbClient.createUserSpringJdbc(
         new UserDataJson(
             null,
@@ -145,7 +145,7 @@ public class JdbcTest {
    **/
   @Test
   void userSpringJdbcChainedTrxTest() {
-    UserDbClient usersDbClient = new UserDbClient();
+    UsersDbClient usersDbClient = new UsersDbClient();
     UserDataJson user = usersDbClient.createUserSpringJdbcChainedTrx(
         new UserDataJson(
             null,
@@ -174,9 +174,9 @@ public class JdbcTest {
   void friendshipRepositoryJdbcTest() {
     UdUserRepository userRepository = new UdUserRepositoryJdbc();
     var firstUser = userRepository.create(
-        new UserEntity(randomUsername() + "-bestFriends", CurrencyValues.RUB));
+        new UdUserEntity(randomUsername() + "-bestFriends", CurrencyValues.RUB));
     var secondUser = userRepository.create(
-        new UserEntity(randomUsername() + "-bestFriends", CurrencyValues.RUB));
+        new UdUserEntity(randomUsername() + "-bestFriends", CurrencyValues.RUB));
     userRepository.addFriend(firstUser, secondUser);
   }
 
@@ -200,9 +200,9 @@ public class JdbcTest {
   void friendshipRepositorySpringJdbcTest() {
     UdUserRepository userRepository = new UdUserRepositorySpringJdbc();
     var firstUser = userRepository.create(
-        new UserEntity(randomUsername() + "-bestFriends", CurrencyValues.RUB));
+        new UdUserEntity(randomUsername() + "-bestFriends", CurrencyValues.RUB));
     var secondUser = userRepository.create(
-        new UserEntity(randomUsername() + "-bestFriends", CurrencyValues.RUB));
+        new UdUserEntity(randomUsername() + "-bestFriends", CurrencyValues.RUB));
     userRepository.addFriend(firstUser, secondUser);
   }
 

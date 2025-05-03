@@ -1,8 +1,8 @@
 package guru.qa.niffler.data.repository.impl;
 
 import guru.qa.niffler.config.Config;
+import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.entity.auth.AuthorityEntity;
-import guru.qa.niffler.data.entity.auth.UserEntity;
 import guru.qa.niffler.data.mapper.AuthUserEntityResultSetExtractor;
 import guru.qa.niffler.data.repository.AuthUserRepository;
 
@@ -20,7 +20,7 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
   private static final Config CFG = Config.getInstance();
 
   @Override
-  public UserEntity create(UserEntity user) {
+  public AuthUserEntity create(AuthUserEntity user) {
     try (PreparedStatement userPs = holder(CFG.authJdbcUrl()).connection().prepareStatement(
         """
             INSERT INTO "user" (username, password, enabled, account_non_expired, account_non_locked, credentials_non_expired)
@@ -59,7 +59,7 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
   }
 
   @Override
-  public Optional<UserEntity> findById(UUID id) {
+  public Optional<AuthUserEntity> findById(UUID id) {
     try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
         """
              SELECT a.id as authority_id,
@@ -86,7 +86,7 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
   }
 
   @Override
-  public Optional<UserEntity> findByUsername(String username) {
+  public Optional<AuthUserEntity> findByUsername(String username) {
     try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
         """
              SELECT a.id as authority_id,
@@ -113,7 +113,7 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
   }
 
   @Override
-  public List<UserEntity> findAll() {
+  public List<AuthUserEntity> findAll() {
     try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
         """
              SELECT a.id as authority_id,
@@ -134,5 +134,15 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  @Override
+  public AuthUserEntity update(AuthUserEntity user) {
+    throw new UnsupportedOperationException("not implemented");
+  }
+
+  @Override
+  public void remove(AuthUserEntity user) {
+    throw new UnsupportedOperationException("not implemented");
   }
 }

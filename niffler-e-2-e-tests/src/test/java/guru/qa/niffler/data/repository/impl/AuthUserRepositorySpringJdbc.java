@@ -1,7 +1,7 @@
 package guru.qa.niffler.data.repository.impl;
 
 import guru.qa.niffler.config.Config;
-import guru.qa.niffler.data.entity.auth.UserEntity;
+import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.mapper.AuthUserEntityResultSetExtractor;
 import guru.qa.niffler.data.repository.AuthUserRepository;
 import guru.qa.niffler.data.tpl.DataSources;
@@ -22,7 +22,7 @@ public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
   private static final Config CFG = Config.getInstance();
 
   @Override
-  public UserEntity create(UserEntity user) {
+  public AuthUserEntity create(AuthUserEntity user) {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
     KeyHolder kh = new GeneratedKeyHolder();
     jdbcTemplate.update(con -> {
@@ -64,7 +64,7 @@ public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
   }
 
   @Override
-  public Optional<UserEntity> findByUsername(String username) {
+  public Optional<AuthUserEntity> findByUsername(String username) {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
     return Optional.ofNullable(
         jdbcTemplate.query(
@@ -88,7 +88,7 @@ public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
   }
 
   @Override
-  public Optional<UserEntity> findById(UUID id) {
+  public Optional<AuthUserEntity> findById(UUID id) {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
     return Optional.ofNullable(
         jdbcTemplate.query(
@@ -112,7 +112,7 @@ public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
   }
 
   @Override
-  public List<UserEntity> findAll() {
+  public List<AuthUserEntity> findAll() {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
     return jdbcTemplate.query(
         """
@@ -129,5 +129,15 @@ public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
             """,
         AuthUserEntityResultSetExtractor.instance
     );
+  }
+
+  @Override
+  public AuthUserEntity update(AuthUserEntity user) {
+    throw new UnsupportedOperationException("not implemented");
+  }
+
+  @Override
+  public void remove(AuthUserEntity user) {
+    throw new UnsupportedOperationException("not implemented");
   }
 }

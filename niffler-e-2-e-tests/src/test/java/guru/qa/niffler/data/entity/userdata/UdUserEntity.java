@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 @Setter
 @Entity
 @Table(name = "\"user\"")
-public class UserEntity implements Serializable {
+public class UdUserEntity implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "id", nullable = false, columnDefinition = "UUID default gen_random_uuid()")
@@ -49,20 +49,20 @@ public class UserEntity implements Serializable {
   @OneToMany(mappedBy = "addressee", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
   private List<FriendshipEntity> friendshipAddressees = new ArrayList<>();
 
-  public UserEntity() {
+  public UdUserEntity() {
   }
 
-  public UserEntity(UUID id) {
+  public UdUserEntity(UUID id) {
     this.id = id;
   }
 
-  public UserEntity(String username, CurrencyValues currency) {
+  public UdUserEntity(String username, CurrencyValues currency) {
     this.username = username;
     this.currency = currency;
   }
 
-  public static UserEntity fromJson(UserDataJson json) {
-    UserEntity userEntity = new UserEntity();
+  public static UdUserEntity fromJson(UserDataJson json) {
+    UdUserEntity userEntity = new UdUserEntity();
     userEntity.setId(json.id());
     userEntity.setUsername(json.username());
     userEntity.setCurrency(json.currency());
@@ -75,7 +75,7 @@ public class UserEntity implements Serializable {
     return userEntity;
   }
 
-  public void addFriends(FriendshipStatus status, UserEntity... friends) {
+  public void addFriends(FriendshipStatus status, UdUserEntity... friends) {
     List<FriendshipEntity> friendsEntities = Stream.of(friends)
         .map(f -> {
           FriendshipEntity fe = new FriendshipEntity();
@@ -88,7 +88,7 @@ public class UserEntity implements Serializable {
     this.friendshipRequests.addAll(friendsEntities);
   }
 
-  public void addInvitations(UserEntity... invitations) {
+  public void addInvitations(UdUserEntity... invitations) {
     List<FriendshipEntity> invitationsEntities = Stream.of(invitations)
         .map(i -> {
           FriendshipEntity fe = new FriendshipEntity();
@@ -101,8 +101,8 @@ public class UserEntity implements Serializable {
     this.friendshipAddressees.addAll(invitationsEntities);
   }
 
-  public void removeFriends(UserEntity... friends) {
-    List<UUID> idsToBeRemoved = Arrays.stream(friends).map(UserEntity::getId).toList();
+  public void removeFriends(UdUserEntity... friends) {
+    List<UUID> idsToBeRemoved = Arrays.stream(friends).map(UdUserEntity::getId).toList();
     for (Iterator<FriendshipEntity> i = getFriendshipRequests().iterator(); i.hasNext(); ) {
       FriendshipEntity friendsEntity = i.next();
       if (idsToBeRemoved.contains(friendsEntity.getAddressee().getId())) {
@@ -112,8 +112,8 @@ public class UserEntity implements Serializable {
     }
   }
 
-  public void removeInvites(UserEntity... invitations) {
-    List<UUID> idsToBeRemoved = Arrays.stream(invitations).map(UserEntity::getId).toList();
+  public void removeInvites(UdUserEntity... invitations) {
+    List<UUID> idsToBeRemoved = Arrays.stream(invitations).map(UdUserEntity::getId).toList();
     for (Iterator<FriendshipEntity> i = getFriendshipAddressees().iterator(); i.hasNext(); ) {
       FriendshipEntity friendsEntity = i.next();
       if (idsToBeRemoved.contains(friendsEntity.getRequester().getId())) {
@@ -130,7 +130,7 @@ public class UserEntity implements Serializable {
     Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
     Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
     if (thisEffectiveClass != oEffectiveClass) return false;
-    UserEntity that = (UserEntity) o;
+    UdUserEntity that = (UdUserEntity) o;
     return getId() != null && Objects.equals(getId(), that.getId());
   }
 

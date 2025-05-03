@@ -18,7 +18,7 @@ import static jakarta.persistence.FetchType.EAGER;
 @Setter
 @Entity
 @Table(name = "\"user\"")
-public class UserEntity implements Serializable {
+public class AuthUserEntity implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "id", nullable = false, columnDefinition = "UUID default gen_random_uuid()")
@@ -45,8 +45,8 @@ public class UserEntity implements Serializable {
   @OneToMany(fetch = EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "user")
   private List<AuthorityEntity> authorities = new ArrayList<>();
 
-  public static UserEntity fromJson(UserAuthJson json) {
-    UserEntity userEntity = new UserEntity();
+  public static AuthUserEntity fromJson(UserAuthJson json) {
+    AuthUserEntity userEntity = new AuthUserEntity();
     userEntity.setId(json.id());
     userEntity.setUsername(json.username());
     userEntity.setPassword(json.password());
@@ -76,7 +76,7 @@ public class UserEntity implements Serializable {
     Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
     Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
     if (thisEffectiveClass != oEffectiveClass) return false;
-    UserEntity that = (UserEntity) o;
+    AuthUserEntity that = (AuthUserEntity) o;
     return getId() != null && Objects.equals(getId(), that.getId());
   }
 

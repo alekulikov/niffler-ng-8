@@ -2,7 +2,7 @@ package guru.qa.niffler.data.mapper;
 
 import guru.qa.niffler.data.entity.auth.Authority;
 import guru.qa.niffler.data.entity.auth.AuthorityEntity;
-import guru.qa.niffler.data.entity.auth.UserEntity;
+import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class AuthUserEntityResultSetExtractor implements ResultSetExtractor<List<UserEntity>> {
+public class AuthUserEntityResultSetExtractor implements ResultSetExtractor<List<AuthUserEntity>> {
 
   public static final AuthUserEntityResultSetExtractor instance = new AuthUserEntityResultSetExtractor();
 
@@ -22,10 +22,10 @@ public class AuthUserEntityResultSetExtractor implements ResultSetExtractor<List
   }
 
   @Override
-  public List<UserEntity> extractData(ResultSet rs) throws SQLException, DataAccessException {
-    Map<UUID, UserEntity> userMap = new ConcurrentHashMap<>();
+  public List<AuthUserEntity> extractData(ResultSet rs) throws SQLException, DataAccessException {
+    Map<UUID, AuthUserEntity> userMap = new ConcurrentHashMap<>();
     while (rs.next()) {
-      UserEntity user = userMap.getOrDefault(rs.getObject("id", UUID.class),
+      AuthUserEntity user = userMap.getOrDefault(rs.getObject("id", UUID.class),
           AuthUserEntityRowMapper.instance.mapRow(rs, 1));
       AuthorityEntity authority = new AuthorityEntity();
       authority.setUser(user);

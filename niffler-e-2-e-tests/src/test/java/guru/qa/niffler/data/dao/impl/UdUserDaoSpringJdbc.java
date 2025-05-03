@@ -2,7 +2,7 @@ package guru.qa.niffler.data.dao.impl;
 
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.UdUserDao;
-import guru.qa.niffler.data.entity.userdata.UserEntity;
+import guru.qa.niffler.data.entity.userdata.UdUserEntity;
 import guru.qa.niffler.data.mapper.UdUserEntityRowMapper;
 import guru.qa.niffler.data.tpl.DataSources;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -20,7 +20,7 @@ public class UdUserDaoSpringJdbc implements UdUserDao {
   private static final Config CFG = Config.getInstance();
 
   @Override
-  public UserEntity create(UserEntity user) {
+  public UdUserEntity create(UdUserEntity user) {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
     KeyHolder kh = new GeneratedKeyHolder();
     jdbcTemplate.update(con -> {
@@ -45,7 +45,7 @@ public class UdUserDaoSpringJdbc implements UdUserDao {
   }
 
   @Override
-  public Optional<UserEntity> findById(UUID id) {
+  public Optional<UdUserEntity> findById(UUID id) {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
     return Optional.ofNullable(
         jdbcTemplate.queryForObject(
@@ -57,7 +57,7 @@ public class UdUserDaoSpringJdbc implements UdUserDao {
   }
 
   @Override
-  public Optional<UserEntity> findByUsername(String username) {
+  public Optional<UdUserEntity> findByUsername(String username) {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
     return Optional.ofNullable(
         jdbcTemplate.queryForObject(
@@ -69,13 +69,13 @@ public class UdUserDaoSpringJdbc implements UdUserDao {
   }
 
   @Override
-  public void delete(UserEntity user) {
+  public void delete(UdUserEntity user) {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
     jdbcTemplate.update("DELETE FROM \"user\" WHERE id = ?", user.getId());
   }
 
   @Override
-  public List<UserEntity> findAll() {
+  public List<UdUserEntity> findAll() {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
     return jdbcTemplate.query(
         "SELECT * FROM \"user\"",

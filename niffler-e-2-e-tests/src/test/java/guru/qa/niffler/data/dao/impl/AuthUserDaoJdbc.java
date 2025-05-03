@@ -2,7 +2,7 @@ package guru.qa.niffler.data.dao.impl;
 
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.AuthUserDao;
-import guru.qa.niffler.data.entity.auth.UserEntity;
+import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -20,7 +20,7 @@ public class AuthUserDaoJdbc implements AuthUserDao {
   private static final Config CFG = Config.getInstance();
 
   @Override
-  public UserEntity create(UserEntity user) {
+  public AuthUserEntity create(AuthUserEntity user) {
     try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
         """
             INSERT INTO "user" (username, password, enabled, account_non_expired, account_non_locked, credentials_non_expired)
@@ -50,7 +50,7 @@ public class AuthUserDaoJdbc implements AuthUserDao {
   }
 
   @Override
-  public Optional<UserEntity> findByUsername(String username) {
+  public Optional<AuthUserEntity> findByUsername(String username) {
     try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
         "SELECT * FROM \"user\" WHERE username = ?"
     )) {
@@ -59,7 +59,7 @@ public class AuthUserDaoJdbc implements AuthUserDao {
 
       try (ResultSet rs = ps.getResultSet()) {
         if (rs.next()) {
-          UserEntity ue = new UserEntity();
+          AuthUserEntity ue = new AuthUserEntity();
           ue.setId(rs.getObject("id", UUID.class));
           ue.setUsername(rs.getString("username"));
           ue.setPassword(rs.getString("password"));
@@ -78,14 +78,14 @@ public class AuthUserDaoJdbc implements AuthUserDao {
   }
 
   @Override
-  public Optional<UserEntity> findById(UUID id) {
+  public Optional<AuthUserEntity> findById(UUID id) {
     try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
         "SELECT * FROM \"user\" WHERE id = ?"
     )) {
       ps.setObject(1, id);
       try (ResultSet rs = ps.executeQuery()) {
         if (rs.next()) {
-          UserEntity ue = new UserEntity();
+          AuthUserEntity ue = new AuthUserEntity();
           ue.setId(rs.getObject("id", UUID.class));
           ue.setUsername(rs.getString("username"));
           ue.setPassword(rs.getString("password"));
@@ -104,15 +104,15 @@ public class AuthUserDaoJdbc implements AuthUserDao {
   }
 
   @Override
-  public List<UserEntity> findAll() {
+  public List<AuthUserEntity> findAll() {
     try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
         "SELECT * FROM \"user\""
     )) {
       ps.execute();
-      List<UserEntity> users = new ArrayList<>();
+      List<AuthUserEntity> users = new ArrayList<>();
       try (ResultSet rs = ps.getResultSet()) {
         while (rs.next()) {
-          UserEntity ue = new UserEntity();
+          AuthUserEntity ue = new AuthUserEntity();
           ue.setId(rs.getObject("id", UUID.class));
           ue.setUsername(rs.getString("username"));
           ue.setPassword(rs.getString("password"));

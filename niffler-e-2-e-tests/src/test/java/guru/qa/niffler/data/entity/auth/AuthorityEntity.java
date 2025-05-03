@@ -26,7 +26,7 @@ public class AuthorityEntity implements Serializable {
 
   @ManyToOne
   @JoinColumn(name = "user_id")
-  private UserEntity user;
+  private AuthUserEntity user;
 
   @Override
   public final boolean equals(Object o) {
@@ -48,7 +48,7 @@ public class AuthorityEntity implements Serializable {
     AuthorityEntity entity = new AuthorityEntity();
     entity.setId(json.id());
     entity.setAuthority(json.authority());
-    entity.setUser(UserEntity.fromJson(json.user()));
+    entity.setUser(AuthUserEntity.fromJson(json.user()));
     return entity;
   }
 }
