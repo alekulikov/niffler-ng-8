@@ -1,4 +1,4 @@
-package guru.qa.niffler.data.repository.impl;
+package guru.qa.niffler.data.repository.impl.jdbc;
 
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.entity.userdata.FriendshipStatus;
@@ -7,7 +7,6 @@ import guru.qa.niffler.data.mapper.UdUserEntityResultSetExtractor;
 import guru.qa.niffler.data.repository.UdUserRepository;
 
 import java.sql.*;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -86,7 +85,7 @@ public class UdUserRepositoryJdbc implements UdUserRepository {
   }
 
   @Override
-  public void delete(UdUserEntity user) {
+  public void remove(UdUserEntity user) {
     try (PreparedStatement userPs = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
         "DELETE FROM \"user\" WHERE id = ?");
          PreparedStatement friendshipPs = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
@@ -97,22 +96,6 @@ public class UdUserRepositoryJdbc implements UdUserRepository {
       friendshipPs.setObject(1, user.getId());
       friendshipPs.setObject(2, user.getId());
       friendshipPs.executeUpdate();
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  @Override
-  public List<UdUserEntity> findAll() {
-    try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
-        """
-            SELECT * FROM "user" u left join friendship f
-                ON u.id = f.requester_id or (u.id = f.addressee_id and status = 'PENDING')
-            """
-    )) {
-      try (ResultSet rs = ps.executeQuery()) {
-        return UdUserEntityResultSetExtractor.instance.extractData(rs);
-      }
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
@@ -164,11 +147,30 @@ public class UdUserRepositoryJdbc implements UdUserRepository {
 
   @Override
   public UdUserEntity update(UdUserEntity user) {
-    throw new UnsupportedOperationException("not implemented");
-  }
-
-  @Override
-  public void remove(UdUserEntity user) {
-    throw new UnsupportedOperationException("not implemented");
+    try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
+        """
+            UPDATE "user" SET username = ?,
+                            currency = ?,
+                            firstname = ?,
+                            surname = ?,
+                            photo = ?,
+                            photo_small = ?,
+                            full_name = ?
+            WHERE id = ?
+            """
+    )) {
+      ps.setString(1, user.getUsername());
+      ps.setString(2, user.getCurrency().name());
+      ps.setString(3, user.getFirstname());
+      ps.setString(4, user.getSurname());
+      ps.setBytes(5, user.getPhoto());
+      ps.setBytes(6, user.getPhotoSmall());
+      ps.setString(7, user.getFullname());
+      ps.setObject(8, user.getId());
+      ps.executeUpdate();
+      return user;
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
   }
 }
