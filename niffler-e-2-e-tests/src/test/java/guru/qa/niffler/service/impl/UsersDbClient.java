@@ -1,52 +1,43 @@
-package guru.qa.niffler.service;
+package guru.qa.niffler.service.impl;
 
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.entity.auth.Authority;
 import guru.qa.niffler.data.entity.auth.AuthorityEntity;
-import guru.qa.niffler.data.entity.userdata.UserEntity;
+import guru.qa.niffler.data.entity.userdata.UdUserEntity;
 import guru.qa.niffler.data.repository.AuthUserRepository;
-import guru.qa.niffler.data.repository.UserdataUserRepository;
-import guru.qa.niffler.data.repository.impl.AuthUserRepositoryHibernate;
-import guru.qa.niffler.data.repository.impl.UserdataUserRepositoryHibernate;
-import guru.qa.niffler.data.tpl.DataSources;
+import guru.qa.niffler.data.repository.UdUserRepository;
+import guru.qa.niffler.data.repository.impl.hibernate.AuthUserRepositoryHibernate;
+import guru.qa.niffler.data.repository.impl.hibernate.UdUserRepositoryHibernate;
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.model.CurrencyValues;
-import guru.qa.niffler.model.UserJson;
-import org.springframework.jdbc.support.JdbcTransactionManager;
+import guru.qa.niffler.model.UserDataJson;
+import guru.qa.niffler.service.UsersClient;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.Arrays;
 
 import static guru.qa.niffler.utils.RandomDataUtils.randomUsername;
 
-
-public class UsersDbClient {
+public class UsersDbClient implements UsersClient {
 
   private static final Config CFG = Config.getInstance();
   private static final PasswordEncoder pe = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
   private final AuthUserRepository authUserRepository = new AuthUserRepositoryHibernate();
-  private final UserdataUserRepository userdataUserRepository = new UserdataUserRepositoryHibernate();
-
-  private final TransactionTemplate txTemplate = new TransactionTemplate(
-      new JdbcTransactionManager(
-          DataSources.dataSource(CFG.authJdbcUrl())
-      )
-  );
+  private final UdUserRepository userdataUserRepository = new UdUserRepositoryHibernate();
 
   private final XaTransactionTemplate xaTransactionTemplate = new XaTransactionTemplate(
       CFG.authJdbcUrl(),
       CFG.userdataJdbcUrl()
   );
 
-  public UserJson createUser(String username, String password) {
+  public UserDataJson createUser(String username, String password) {
     return xaTransactionTemplate.execute(() -> {
           AuthUserEntity authUser = authUserEntity(username, password);
           authUserRepository.create(authUser);
-          return UserJson.fromEntity(
+          return UserDataJson.fromEntity(
               userdataUserRepository.create(userEntity(username)),
               null
           );
@@ -54,9 +45,10 @@ public class UsersDbClient {
     );
   }
 
-  public void addIncomeInvitation(UserJson targetUser, int count) {
+  @Override
+  public void createIncomeInvitations(UserDataJson targetUser, int count) {
     if (count > 0) {
-      UserEntity targetEntity = userdataUserRepository.findById(
+      UdUserEntity targetEntity = userdataUserRepository.findById(
           targetUser.id()
       ).orElseThrow();
 
@@ -65,8 +57,8 @@ public class UsersDbClient {
               String username = randomUsername();
               AuthUserEntity authUser = authUserEntity(username, "12345");
               authUserRepository.create(authUser);
-              UserEntity adressee = userdataUserRepository.create(userEntity(username));
-              userdataUserRepository.addIncomeInvitation(targetEntity, adressee);
+              UdUserEntity requester = userdataUserRepository.create(userEntity(username));
+              userdataUserRepository.sendInvitation(requester, targetEntity);
               return null;
             }
         );
@@ -74,9 +66,10 @@ public class UsersDbClient {
     }
   }
 
-  public void addOutcomeInvitation(UserJson targetUser, int count) {
+  @Override
+  public void createOutcomeInvitations(UserDataJson targetUser, int count) {
     if (count > 0) {
-      UserEntity targetEntity = userdataUserRepository.findById(
+      UdUserEntity targetEntity = userdataUserRepository.findById(
           targetUser.id()
       ).orElseThrow();
 
@@ -85,8 +78,8 @@ public class UsersDbClient {
               String username = randomUsername();
               AuthUserEntity authUser = authUserEntity(username, "12345");
               authUserRepository.create(authUser);
-              UserEntity adressee = userdataUserRepository.create(userEntity(username));
-              userdataUserRepository.addOutcomeInvitation(targetEntity, adressee);
+              UdUserEntity addressee = userdataUserRepository.create(userEntity(username));
+              userdataUserRepository.sendInvitation(targetEntity, addressee);
               return null;
             }
         );
@@ -94,12 +87,29 @@ public class UsersDbClient {
     }
   }
 
-  void addFriend(UserJson targetUser, int count) {
+  @Override
+  public void createFriends(UserDataJson targetUser, int count) {
+    if (count > 0) {
+      UdUserEntity targetEntity = userdataUserRepository.findById(
+          targetUser.id()
+      ).orElseThrow();
 
+      for (int i = 0; i < count; i++) {
+        xaTransactionTemplate.execute(() -> {
+              String username = randomUsername();
+              AuthUserEntity authFriend = authUserEntity(username, "12345");
+              authUserRepository.create(authFriend);
+              UdUserEntity userFriend = userdataUserRepository.create(userEntity(username));
+              userdataUserRepository.addFriend(targetEntity, userFriend);
+              return null;
+            }
+        );
+      }
+    }
   }
 
-  private UserEntity userEntity(String username) {
-    UserEntity ue = new UserEntity();
+  private UdUserEntity userEntity(String username) {
+    UdUserEntity ue = new UdUserEntity();
     ue.setUsername(username);
     ue.setCurrency(CurrencyValues.RUB);
     return ue;

@@ -1,4 +1,4 @@
-package guru.qa.niffler.data.repository.impl;
+package guru.qa.niffler.data.repository.impl.hibernate;
 
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
@@ -25,6 +25,12 @@ public class AuthUserRepositoryHibernate implements AuthUserRepository {
   }
 
   @Override
+  public AuthUserEntity update(AuthUserEntity user) {
+    entityManager.joinTransaction();
+    return entityManager.merge(user);
+  }
+
+  @Override
   public Optional<AuthUserEntity> findById(UUID id) {
     return Optional.ofNullable(
         entityManager.find(AuthUserEntity.class, id)
@@ -35,12 +41,21 @@ public class AuthUserRepositoryHibernate implements AuthUserRepository {
   public Optional<AuthUserEntity> findByUsername(String username) {
     try {
       return Optional.of(
-          entityManager.createQuery("select u from UserEntity u where u.username =: username", AuthUserEntity.class)
+          entityManager.createQuery("select u from AuthUserEntity u where u.username =: username", AuthUserEntity.class)
               .setParameter("username", username)
               .getSingleResult()
       );
     } catch (NoResultException e) {
       return Optional.empty();
+    }
+  }
+
+  @Override
+  public void remove(AuthUserEntity user) {
+    AuthUserEntity managed = entityManager.find(AuthUserEntity.class, user.getId());
+    if (managed != null) {
+      entityManager.joinTransaction();
+      entityManager.remove(managed);
     }
   }
 }

@@ -152,4 +152,62 @@ public class SpendDaoJdbc implements SpendDao {
       throw new RuntimeException(e);
     }
   }
+
+  @Override
+  public Optional<SpendEntity> findByUsernameAndSpendDescription(String username, String description) {
+    try (PreparedStatement ps = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
+        "SELECT * FROM spend WHERE username = ? AND description = ?"
+    )) {
+      ps.setString(1, username);
+      ps.setString(2, description);
+      ps.execute();
+      try (ResultSet rs = ps.getResultSet()) {
+        if (rs.next()) {
+          CategoryDao categoryDao = new CategoryDaoJdbc();
+          SpendEntity se = new SpendEntity();
+          CategoryEntity ce = categoryDao
+              .findCategoryById(rs.getObject("category_id", UUID.class))
+              .orElseThrow(() -> new SQLException("Can`t find category in Spend"));
+          se.setId(rs.getObject("id", UUID.class));
+          se.setUsername(rs.getString("username"));
+          se.setSpendDate(rs.getDate("spend_date"));
+          se.setCurrency(CurrencyValues.valueOf(rs.getString("currency")));
+          se.setAmount(rs.getDouble("amount"));
+          se.setDescription(rs.getString("description"));
+          se.setCategory(ce);
+          return Optional.of(se);
+        }
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+    return Optional.empty();
+  }
+
+  @Override
+  public SpendEntity update(SpendEntity spend) {
+    try (PreparedStatement ps = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
+        """
+            UPDATE spend SET username = ?,
+                             spend_date = ?,
+                             currency = ?,
+                             amount = ?,
+                             description = ?,
+                             category_id = ?
+            WHERE id = ?
+            """
+    )) {
+      ps.setString(1, spend.getUsername());
+      ps.setDate(2, new Date(spend.getSpendDate().getTime()));
+      ps.setString(3, spend.getCurrency().name());
+      ps.setDouble(4, spend.getAmount());
+      ps.setString(5, spend.getDescription());
+      ps.setObject(6, spend.getCategory().getId());
+      ps.setObject(7, spend.getId());
+      ps.executeUpdate();
+      return spend;
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
 }

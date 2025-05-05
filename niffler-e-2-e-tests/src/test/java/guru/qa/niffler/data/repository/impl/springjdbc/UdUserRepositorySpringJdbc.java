@@ -1,4 +1,4 @@
-package guru.qa.niffler.data.repository.impl;
+package guru.qa.niffler.data.repository.impl.springjdbc;
 
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.entity.userdata.FriendshipStatus;
@@ -81,14 +81,13 @@ public class UdUserRepositorySpringJdbc implements UdUserRepository {
   }
 
   @Override
-  public void delete(UdUserEntity user) {
+  public void remove(UdUserEntity user) {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
     jdbcTemplate.update("DELETE FROM \"user\" WHERE id = ?", user.getId());
     jdbcTemplate.update("DELETE FROM friendship WHERE requester_id = ? OR addressee_id = ?",
         user.getId(), user.getId());
   }
 
-  @Override
   public List<UdUserEntity> findAll() {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
     return jdbcTemplate.query(
@@ -146,11 +145,19 @@ public class UdUserRepositorySpringJdbc implements UdUserRepository {
 
   @Override
   public UdUserEntity update(UdUserEntity user) {
-    throw new UnsupportedOperationException("not implemented");
-  }
-
-  @Override
-  public void remove(UdUserEntity user) {
-    throw new UnsupportedOperationException("not implemented");
+    JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
+    jdbcTemplate.update(
+        """
+            UPDATE "user" SET username = ?,
+                            currency = ?,
+                            firstname = ?,
+                            surname = ?,
+                            photo = ?,
+                            photo_small = ?,
+                            full_name = ?
+            WHERE id = ?
+            """, user.getUsername(), user.getCurrency().name(), user.getFirstname(),
+        user.getSurname(), user.getPhoto(), user.getPhotoSmall(), user.getFullname(), user.getId());
+    return user;
   }
 }

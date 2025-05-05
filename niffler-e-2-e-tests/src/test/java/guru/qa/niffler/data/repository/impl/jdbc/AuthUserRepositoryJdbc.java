@@ -1,4 +1,4 @@
-package guru.qa.niffler.data.repository.impl;
+package guru.qa.niffler.data.repository.impl.jdbc;
 
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
@@ -112,7 +112,6 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
     }
   }
 
-  @Override
   public List<AuthUserEntity> findAll() {
     try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
         """
@@ -138,11 +137,43 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
 
   @Override
   public AuthUserEntity update(AuthUserEntity user) {
-    throw new UnsupportedOperationException("not implemented");
+    try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
+        """
+            UPDATE "user"  SET username = ?,
+                            password = ?,
+                            enabled = ?,
+                            account_non_expired = ?,
+                            account_non_locked = ?,
+                            credentials_non_expired = ?
+            WHERE id = ?
+            """
+    )) {
+      ps.setString(1, user.getUsername());
+      ps.setString(2, user.getPassword());
+      ps.setBoolean(3, user.getEnabled());
+      ps.setBoolean(4, user.getAccountNonExpired());
+      ps.setBoolean(5, user.getAccountNonLocked());
+      ps.setBoolean(6, user.getCredentialsNonExpired());
+      ps.setObject(7, user.getId());
+      ps.executeUpdate();
+      return user;
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Override
   public void remove(AuthUserEntity user) {
-    throw new UnsupportedOperationException("not implemented");
+    try (PreparedStatement userPs = holder(CFG.authJdbcUrl()).connection().prepareStatement(
+        "DELETE FROM \"user\" WHERE id = ?");
+         PreparedStatement authorityPs = holder(CFG.authJdbcUrl()).connection().prepareStatement(
+             "DELETE FROM authority WHERE user_id = ?")) {
+      userPs.setObject(1, user.getId());
+      userPs.executeUpdate();
+      authorityPs.setObject(1, user.getId());
+      authorityPs.executeUpdate();
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
   }
 }

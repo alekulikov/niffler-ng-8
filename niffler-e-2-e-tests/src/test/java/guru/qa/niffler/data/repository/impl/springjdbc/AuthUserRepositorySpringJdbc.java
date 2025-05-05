@@ -1,4 +1,4 @@
-package guru.qa.niffler.data.repository.impl;
+package guru.qa.niffler.data.repository.impl.springjdbc;
 
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
@@ -111,7 +111,6 @@ public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
     );
   }
 
-  @Override
   public List<AuthUserEntity> findAll() {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
     return jdbcTemplate.query(
@@ -133,11 +132,26 @@ public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
 
   @Override
   public AuthUserEntity update(AuthUserEntity user) {
-    throw new UnsupportedOperationException("not implemented");
+    JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
+    jdbcTemplate.update(
+        """
+            UPDATE "user"  SET username = ?,
+                            password = ?,
+                            enabled = ?,
+                            account_non_expired = ?,
+                            account_non_locked = ?,
+                            credentials_non_expired = ?
+            WHERE id = ?
+            """, user.getUsername(), user.getPassword(), user.getEnabled(),
+        user.getAccountNonExpired(), user.getAccountNonLocked(), user.getCredentialsNonExpired(), user.getId()
+    );
+    return user;
   }
 
   @Override
   public void remove(AuthUserEntity user) {
-    throw new UnsupportedOperationException("not implemented");
+    JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
+    jdbcTemplate.update("DELETE FROM \"user\" WHERE id = ?", user.getId());
+    jdbcTemplate.update("DELETE FROM authority WHERE user_id = ?", user.getId());
   }
 }
