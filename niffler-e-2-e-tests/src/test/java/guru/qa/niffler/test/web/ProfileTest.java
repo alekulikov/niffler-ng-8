@@ -21,12 +21,12 @@ public class ProfileTest {
       )
   )
   @Test
-  void archivedCategoryShouldPresentInCategoriesList(CategoryJson category) {
+  void archivedCategoryShouldPresentInCategoriesList(CategoryJson[] category) {
     Selenide.open(CFG.frontUrl(), LoginPage.class)
         .doLogin("duck", "12345")
         .goProfilePage()
         .switchArchivedCategories()
-        .checkCategoryExist(category.name());
+        .checkCategoryExist(category[0].name());
   }
 
   @User(
@@ -36,10 +36,10 @@ public class ProfileTest {
       )
   )
   @Test
-  void activeCategoryShouldPresentInCategoriesList(CategoryJson category) {
+  void activeCategoryShouldPresentInCategoriesList(CategoryJson[] category) {
     Selenide.open(CFG.frontUrl(), LoginPage.class)
         .doLogin("duck", "12345")
         .goProfilePage()
-        .checkCategoryExist(category.name());
+        .checkCategoryExist(category[0].name());
   }
 }

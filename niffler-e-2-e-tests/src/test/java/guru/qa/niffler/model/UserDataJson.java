@@ -1,8 +1,10 @@
 package guru.qa.niffler.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import guru.qa.niffler.data.entity.userdata.UdUserEntity;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 public record UserDataJson(
@@ -23,7 +25,9 @@ public record UserDataJson(
     @JsonProperty("photoSmall")
     byte[] photoSmall,
     @JsonProperty("friendshipStatus")
-    FriendshipStatus friendshipStatus) {
+    FriendshipStatus friendshipStatus,
+    @JsonIgnore
+    TestData testData) {
 
   public static UserDataJson fromEntity(UdUserEntity entity, FriendshipStatus friendshipStatus) {
     return new UserDataJson(
@@ -35,7 +39,37 @@ public record UserDataJson(
         entity.getFullname(),
         entity.getPhoto(),
         entity.getPhotoSmall(),
-        friendshipStatus
+        friendshipStatus,
+        new TestData(
+            null,
+            new ArrayList<>(),
+            new ArrayList<>()
+        )
+    );
+  }
+
+  public UserDataJson withPassword(String password) {
+    return withTestData(
+        new TestData(
+            password,
+            testData.categories(),
+            testData.spends()
+        )
+    );
+  }
+
+  public UserDataJson withTestData(TestData testData) {
+    return new UserDataJson(
+        id,
+        username,
+        currency,
+        firstname,
+        surname,
+        fullname,
+        photo,
+        photoSmall,
+        friendshipStatus,
+        testData
     );
   }
 }

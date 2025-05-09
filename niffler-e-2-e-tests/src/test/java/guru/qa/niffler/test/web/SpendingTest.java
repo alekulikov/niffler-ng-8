@@ -26,12 +26,12 @@ public class SpendingTest {
       )
   )
   @Test
-  void spendingDescriptionShouldBeUpdatedByTableAction(SpendJson spend) {
+  void spendingDescriptionShouldBeUpdatedByTableAction(SpendJson[] spend) {
     final String newDescription = "Обучение Niffler NG";
 
     Selenide.open(CFG.frontUrl(), LoginPage.class)
         .doLogin("duck", "12345")
-        .editSpending(spend.description())
+        .editSpending(spend[0].description())
         .editDescription(newDescription)
         .save();
 

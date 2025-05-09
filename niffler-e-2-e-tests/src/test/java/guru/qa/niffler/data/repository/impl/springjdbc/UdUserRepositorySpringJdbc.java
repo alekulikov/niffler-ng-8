@@ -51,33 +51,29 @@ public class UdUserRepositorySpringJdbc implements UdUserRepository {
   @Override
   public Optional<UdUserEntity> findById(UUID id) {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
-    return Optional.ofNullable(
-        jdbcTemplate.query(
-            """
-                SELECT * FROM "user" u left join friendship f
-                    ON u.id = f.requester_id or (u.id = f.addressee_id and status = 'PENDING')
-                WHERE u.id = ?
-                """,
-            UdUserEntityResultSetExtractor.instance,
-            id
-        ).getFirst()
-    );
+    return jdbcTemplate.query(
+        """
+            SELECT * FROM "user" u left join friendship f
+                ON u.id = f.requester_id or (u.id = f.addressee_id and status = 'PENDING')
+            WHERE u.id = ?
+            """,
+        UdUserEntityResultSetExtractor.instance,
+        id
+    ).stream().findFirst();
   }
 
   @Override
   public Optional<UdUserEntity> findByUsername(String username) {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
-    return Optional.ofNullable(
-        jdbcTemplate.query(
-            """
-                SELECT * FROM "user" u left join friendship f
-                    ON u.id = f.requester_id or (u.id = f.addressee_id and status = 'PENDING')
-                WHERE u.username = ?
-                """,
-            UdUserEntityResultSetExtractor.instance,
-            username
-        ).getFirst()
-    );
+    return jdbcTemplate.query(
+        """
+            SELECT * FROM "user" u left join friendship f
+                ON u.id = f.requester_id or (u.id = f.addressee_id and status = 'PENDING')
+            WHERE u.username = ?
+            """,
+        UdUserEntityResultSetExtractor.instance,
+        username
+    ).stream().findFirst();
   }
 
   @Override

@@ -18,25 +18,20 @@ public class SpendDbClient implements SpendClient {
   private final XaTransactionTemplate xaTransactionTemplate = new XaTransactionTemplate(CFG.spendJdbcUrl());
 
   public SpendJson createSpend(SpendJson spend) {
-    return xaTransactionTemplate.execute(() -> {
-      var createdSpend = spendRepository.create(SpendEntity.fromJson(spend));
-      return SpendJson.fromEntity(createdSpend);
-    });
+    return xaTransactionTemplate.execute(() ->
+        SpendJson.fromEntity(spendRepository.create(SpendEntity.fromJson(spend)))
+    );
   }
 
   public CategoryJson createCategory(CategoryJson category) {
-    return xaTransactionTemplate.execute(() -> {
-          CategoryEntity categoryEntity = CategoryEntity.fromJson(category);
-          return CategoryJson.fromEntity(spendRepository.createCategory(categoryEntity));
-        }
+    return xaTransactionTemplate.execute(() ->
+        CategoryJson.fromEntity(spendRepository.createCategory(CategoryEntity.fromJson(category)))
     );
   }
 
   public CategoryJson updateCategory(CategoryJson category) {
-    return xaTransactionTemplate.execute(() -> {
-          CategoryEntity categoryEntity = CategoryEntity.fromJson(category);
-          return CategoryJson.fromEntity(spendRepository.updateCategory(categoryEntity));
-        }
+    return xaTransactionTemplate.execute(() ->
+        CategoryJson.fromEntity(spendRepository.updateCategory(CategoryEntity.fromJson(category)))
     );
   }
 }
