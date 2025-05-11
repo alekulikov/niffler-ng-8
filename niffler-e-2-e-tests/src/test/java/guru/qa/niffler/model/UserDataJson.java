@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import guru.qa.niffler.data.entity.userdata.UdUserEntity;
 
-import java.util.ArrayList;
 import java.util.UUID;
 
 public record UserDataJson(
@@ -41,9 +40,7 @@ public record UserDataJson(
         entity.getPhotoSmall(),
         friendshipStatus,
         new TestData(
-            null,
-            new ArrayList<>(),
-            new ArrayList<>()
+            null
         )
     );
   }
@@ -53,7 +50,10 @@ public record UserDataJson(
         new TestData(
             password,
             testData.categories(),
-            testData.spends()
+            testData.spends(),
+            testData.incomeInvitations(),
+            testData.outcomeInvitations(),
+            testData.friends()
         )
     );
   }

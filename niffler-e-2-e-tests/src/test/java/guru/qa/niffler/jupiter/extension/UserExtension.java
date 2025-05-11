@@ -26,6 +26,9 @@ public class UserExtension implements
           if ("".equals(anno.username())) {
             String username = randomUsername();
             UserDataJson user = usersClient.createUser(username, defaultPassword);
+            usersClient.createFriends(user, anno.friends());
+            usersClient.createIncomeInvitations(user, anno.incomeInvitations());
+            usersClient.createOutcomeInvitations(user, anno.outcomeInvitations());
             context.getStore(NAMESPACE).put(
                 context.getUniqueId(),
                 user.withPassword(defaultPassword)

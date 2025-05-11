@@ -2,49 +2,57 @@ package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
 import guru.qa.niffler.config.Config;
+import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.annotation.meta.WebTest;
+import guru.qa.niffler.model.UserDataJson;
 import guru.qa.niffler.page.LoginPage;
 import org.junit.jupiter.api.Test;
-
-import static guru.qa.niffler.jupiter.extension.UsersQueueExtension.StaticUser;
-import static guru.qa.niffler.jupiter.extension.UsersQueueExtension.UserType;
-import static guru.qa.niffler.jupiter.extension.UsersQueueExtension.UserType.Type.*;
 
 @WebTest
 public class FriendsTest {
 
   private static final Config CFG = Config.getInstance();
 
+  @User(
+      friends = 3
+  )
   @Test
-  void friendShouldBePresentInFriendsTable(@UserType(WITH_FRIEND) StaticUser user) {
+  void friendShouldBePresentInFriendsTable(UserDataJson user) {
     Selenide.open(CFG.frontUrl(), LoginPage.class)
-        .doLogin(user.username(), user.password())
+        .doLogin(user.username(), user.testData().password())
         .goFriendsPage()
-        .checkThatFriendsContains(user.friend());
+        .checkThatFriendsContains(user.testData().friends().toArray(String[]::new));
   }
 
+  @User
   @Test
-  void friendsTableShouldBeEmptyForNewUser(@UserType(EMPTY) StaticUser user) {
+  void friendsTableShouldBeEmptyForNewUser(UserDataJson user) {
     Selenide.open(CFG.frontUrl(), LoginPage.class)
-        .doLogin(user.username(), user.password())
+        .doLogin(user.username(), user.testData().password())
         .goFriendsPage()
         .checkThatFriendsEmpty();
   }
 
+  @User(
+      incomeInvitations = 2
+  )
   @Test
-  void incomeInvitationBePresentInFriendsTable(@UserType(WITH_INCOME_REQUEST) StaticUser user) {
+  void incomeInvitationBePresentInFriendsTable(UserDataJson user) {
     Selenide.open(CFG.frontUrl(), LoginPage.class)
-        .doLogin(user.username(), user.password())
+        .doLogin(user.username(), user.testData().password())
         .goFriendsPage()
-        .checkThatIncomeRequestsContains(user.income());
+        .checkThatIncomeRequestsContains(user.testData().incomeInvitations().toArray(String[]::new));
   }
 
+  @User(
+      outcomeInvitations = 1
+  )
   @Test
-  void outcomeInvitationBePresentInAllPeoplesTable(@UserType(WITH_OUTCOME_REQUEST) StaticUser user) {
+  void outcomeInvitationBePresentInAllPeoplesTable(UserDataJson user) {
     Selenide.open(CFG.frontUrl(), LoginPage.class)
-        .doLogin(user.username(), user.password())
+        .doLogin(user.username(), user.testData().password())
         .goFriendsPage()
         .selectAllPeopleTab()
-        .checkThatOutcomeRequestsContains(user.outcome());
+        .checkThatOutcomeRequestsContains(user.testData().outcomeInvitations().toArray(String[]::new));
   }
 }
