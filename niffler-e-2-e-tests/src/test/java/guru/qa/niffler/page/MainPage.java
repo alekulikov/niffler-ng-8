@@ -7,6 +7,7 @@ import org.openqa.selenium.By;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.executeJavaScript;
 
 public class MainPage {
 
@@ -16,8 +17,10 @@ public class MainPage {
   private final SelenideElement profileBtn = $("button[aria-label=\"Menu\"]");
   private final SelenideElement profileLink = $(By.linkText("Profile"));
   private final SelenideElement friendsLink = $(By.linkText("Friends"));
+  private final SelenideElement spendingSearch = $("input[placeholder='Search']");
 
   public EditSpendingPage editSpending(String spendingDescription) {
+    filterSpendingsByDescription(spendingDescription);
     tableRows.find(text(spendingDescription))
         .$$("td")
         .get(5)
@@ -46,5 +49,11 @@ public class MainPage {
     profileBtn.click();
     friendsLink.click();
     return new FriendsPage();
+  }
+
+  public MainPage filterSpendingsByDescription(String spendingDescription) {
+    executeJavaScript("arguments[0].value = '';", spendingSearch);
+    spendingSearch.setValue(spendingDescription).pressEnter();
+    return this;
   }
 }

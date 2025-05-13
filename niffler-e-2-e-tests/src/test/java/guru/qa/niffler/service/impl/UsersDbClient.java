@@ -53,15 +53,16 @@ public class UsersDbClient implements UsersClient {
       ).orElseThrow();
 
       for (int i = 0; i < count; i++) {
-        xaTransactionTemplate.execute(() -> {
+        targetUser.testData()
+            .incomeInvitations()
+            .add(xaTransactionTemplate.execute(() -> {
               String username = randomUsername();
               AuthUserEntity authUser = authUserEntity(username, "12345");
               authUserRepository.create(authUser);
               UdUserEntity requester = userdataUserRepository.create(userEntity(username));
               userdataUserRepository.sendInvitation(requester, targetEntity);
-              return null;
-            }
-        );
+              return requester;
+            }).getUsername());
       }
     }
   }
@@ -74,15 +75,16 @@ public class UsersDbClient implements UsersClient {
       ).orElseThrow();
 
       for (int i = 0; i < count; i++) {
-        xaTransactionTemplate.execute(() -> {
+        targetUser.testData()
+            .outcomeInvitations()
+            .add(xaTransactionTemplate.execute(() -> {
               String username = randomUsername();
               AuthUserEntity authUser = authUserEntity(username, "12345");
               authUserRepository.create(authUser);
               UdUserEntity addressee = userdataUserRepository.create(userEntity(username));
               userdataUserRepository.sendInvitation(targetEntity, addressee);
-              return null;
-            }
-        );
+              return addressee;
+            }).getUsername());
       }
     }
   }
@@ -95,15 +97,16 @@ public class UsersDbClient implements UsersClient {
       ).orElseThrow();
 
       for (int i = 0; i < count; i++) {
-        xaTransactionTemplate.execute(() -> {
+        targetUser.testData()
+            .friends()
+            .add(xaTransactionTemplate.execute(() -> {
               String username = randomUsername();
               AuthUserEntity authFriend = authUserEntity(username, "12345");
               authUserRepository.create(authFriend);
               UdUserEntity userFriend = userdataUserRepository.create(userEntity(username));
               userdataUserRepository.addFriend(targetEntity, userFriend);
-              return null;
-            }
-        );
+              return userFriend;
+            }).getUsername());
       }
     }
   }
