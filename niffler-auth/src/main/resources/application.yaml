@@ -38,6 +38,8 @@ spring:
     open-in-view: false
 
 logging:
+  file:
+    name: ./logs/niffler-auth/app.log
   level:
     root: INFO
     org.springframework.kafka: INFO
