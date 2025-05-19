@@ -32,6 +32,8 @@ spring:
     open-in-view: false
 
 logging:
+  file:
+    name: ./logs/niffler-userdata/app.log
   level:
     root: INFO
     org.springframework.kafka: INFO

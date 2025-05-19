@@ -12,6 +12,7 @@ import org.springframework.core.io.ClassPathResource;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.Base64;
 
@@ -31,7 +32,10 @@ public class ScreenShotTestExtension implements ParameterResolver, TestExecution
   @SneakyThrows
   @Override
   public BufferedImage resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-    return ImageIO.read(new ClassPathResource("img/expected-stat.png").getInputStream());
+    return ImageIO.read(new ClassPathResource(extensionContext.getRequiredTestMethod()
+        .getAnnotation(ScreenShotTest.class).value())
+        .getInputStream()
+    );
   }
 
   @Override
@@ -47,6 +51,13 @@ public class ScreenShotTestExtension implements ParameterResolver, TestExecution
         "application/vnd.allure.image.diff",
         objectMapper.writeValueAsString(screenDif)
     );
+
+    ScreenShotTest anno = context.getRequiredTestMethod().getAnnotation(ScreenShotTest.class);
+    if (anno.rewriteExpected() && getActual() != null) {
+      ImageIO.write(getActual(), "png",
+          new File(String.format("src/test/resources/%s", anno.value())));
+    }
+
     throw throwable;
   }
 
