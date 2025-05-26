@@ -5,6 +5,7 @@ import guru.qa.niffler.config.Config;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.service.SpendClient;
+import io.qameta.allure.okhttp3.AllureOkHttp3;
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -19,7 +20,11 @@ public class SpendApiClient implements SpendClient {
 
   private static final Config CFG = Config.getInstance();
 
-  private final OkHttpClient client = new OkHttpClient.Builder().build();
+  private final OkHttpClient client = new OkHttpClient.Builder()
+      .addNetworkInterceptor(new AllureOkHttp3()
+          .setRequestTemplate("request-attachment.ftl")
+          .setResponseTemplate("response-attachment.ftl"))
+      .build();
   private final Retrofit retrofit = new Retrofit.Builder()
       .baseUrl(CFG.spendUrl())
       .client(client)
