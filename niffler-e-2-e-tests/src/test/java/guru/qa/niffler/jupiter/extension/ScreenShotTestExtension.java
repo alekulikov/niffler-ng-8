@@ -19,6 +19,7 @@ import java.util.Base64;
 public class ScreenShotTestExtension implements ParameterResolver, TestExecutionExceptionHandler {
 
   public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(ScreenShotTestExtension.class);
+  public static final String ASSERT_SCREEN_MESSAGE = "Screen comparison failure";
 
   private static final ObjectMapper objectMapper = new ObjectMapper();
   private static final Base64.Encoder encoder = Base64.getEncoder();
@@ -40,17 +41,19 @@ public class ScreenShotTestExtension implements ParameterResolver, TestExecution
 
   @Override
   public void handleTestExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
-    ScreenDiff screenDif = new ScreenDiff(
-        "data:image/png;base64," + encoder.encodeToString(imageToBytes(getExpected())),
-        "data:image/png;base64," + encoder.encodeToString(imageToBytes(getActual())),
-        "data:image/png;base64," + encoder.encodeToString(imageToBytes(getDiff()))
-    );
+    if (throwable.getMessage().contains(ASSERT_SCREEN_MESSAGE)) {
+      ScreenDiff screenDif = new ScreenDiff(
+          "data:image/png;base64," + encoder.encodeToString(imageToBytes(getExpected())),
+          "data:image/png;base64," + encoder.encodeToString(imageToBytes(getActual())),
+          "data:image/png;base64," + encoder.encodeToString(imageToBytes(getDiff()))
+      );
 
-    Allure.addAttachment(
-        "Screenshot diff",
-        "application/vnd.allure.image.diff",
-        objectMapper.writeValueAsString(screenDif)
-    );
+      Allure.addAttachment(
+          "Screenshot diff",
+          "application/vnd.allure.image.diff",
+          objectMapper.writeValueAsString(screenDif)
+      );
+    }
 
     ScreenShotTest anno = context.getRequiredTestMethod().getAnnotation(ScreenShotTest.class);
     if (anno.rewriteExpected() && getActual() != null) {
