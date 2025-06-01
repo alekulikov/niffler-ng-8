@@ -1,11 +1,10 @@
 package guru.qa.niffler.page;
 
-import com.codeborne.selenide.CollectionCondition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
-import guru.qa.niffler.condition.Color;
 import guru.qa.niffler.jupiter.extension.ScreenShotTestExtension;
+import guru.qa.niffler.model.Bubble;
 import guru.qa.niffler.utils.ScreenDiffResult;
 import lombok.SneakyThrows;
 
@@ -14,7 +13,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import static com.codeborne.selenide.Selenide.$;
-import static guru.qa.niffler.condition.StatConditions.color;
+import static guru.qa.niffler.condition.StatConditions.bubbles;
 import static java.util.Objects.requireNonNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
@@ -35,17 +34,12 @@ public class StatComponent {
     return this;
   }
 
-  public BufferedImage statisticDiagramScreenshot() throws IOException {
+  public StatComponent checkBubbles(Bubble... expectedBubbles) {
+    bubbles.should(bubbles(expectedBubbles));
+    return this;
+  }
+
+  private BufferedImage statisticDiagramScreenshot() throws IOException {
     return ImageIO.read(requireNonNull(statisticDiagram.screenshot()));
-  }
-
-  public StatComponent checkStatisticBubblesContains(String... texts) {
-    bubbles.should(CollectionCondition.texts(texts));
-    return this;
-  }
-
-  public StatComponent checkBubbles(Color... expectedColors) {
-    bubbles.should(color(expectedColors));
-    return this;
   }
 }
