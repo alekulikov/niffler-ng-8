@@ -7,4 +7,13 @@ public enum Color {
   yellow("rgba(255, 183, 3, 1)"), green("rgba(53, 173, 123, 1)");
 
   public final String rgb;
+
+  public static Color fromRgb(String rgb) {
+    for (Color color : values()) {
+      if (color.rgb.equals(rgb)) {
+        return color;
+      }
+    }
+    throw new IllegalArgumentException("Unknown color for rgb: " + rgb);
+  }
 }

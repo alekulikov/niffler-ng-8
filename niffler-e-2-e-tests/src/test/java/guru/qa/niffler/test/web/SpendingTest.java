@@ -8,7 +8,9 @@ import guru.qa.niffler.jupiter.annotation.ScreenShotTest;
 import guru.qa.niffler.jupiter.annotation.Spend;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.annotation.meta.WebTest;
+import guru.qa.niffler.model.Bubble;
 import guru.qa.niffler.model.CurrencyValues;
+import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.model.UserDataJson;
 import guru.qa.niffler.page.LoginPage;
 import org.junit.jupiter.api.Test;
@@ -53,10 +55,8 @@ public class SpendingTest {
         .doLogin(user.username(), user.testData().password())
         .editSpending(user.testData().spends().getFirst().description())
         .editAmount(82500.99).save()
-        .getStatComponent()
         .checkStatisticDiagram(expected)
-        .checkStatisticBubblesContains("Обучение 82500.99 ₽")
-        .checkBubbles(Color.yellow);
+        .checkBubbles(new Bubble(Color.yellow, "Обучение 82500.99 ₽"));
   }
 
   @User(
@@ -71,10 +71,8 @@ public class SpendingTest {
   void checkStatComponentTest(UserDataJson user, BufferedImage expected) {
     Selenide.open(CFG.frontUrl(), LoginPage.class)
         .doLogin(user.username(), user.testData().password())
-        .getStatComponent()
         .checkStatisticDiagram(expected)
-        .checkStatisticBubblesContains("Обучение 79990.19 ₽")
-        .checkBubbles(Color.yellow);
+        .checkBubbles(new Bubble(Color.yellow, "Обучение 79990.19 ₽"));
   }
 
   @User(
@@ -90,7 +88,6 @@ public class SpendingTest {
     Selenide.open(CFG.frontUrl(), LoginPage.class)
         .doLogin(user.username(), user.testData().password())
         .deleteSpending(user.testData().spends().getFirst().description())
-        .getStatComponent()
         .checkStatisticDiagram(expected);
   }
 
@@ -125,9 +122,39 @@ public class SpendingTest {
   void checkStatComponentWithArchiveCategoryTest(UserDataJson user, BufferedImage expected) {
     Selenide.open(CFG.frontUrl(), LoginPage.class)
         .doLogin(user.username(), user.testData().password())
-        .getStatComponent()
         .checkStatisticDiagram(expected)
-        .checkStatisticBubblesContains("Поездки 9500 ₽", "Archived 3100 ₽")
-        .checkBubbles(Color.yellow, Color.green);
+        .checkBubbles(
+            new Bubble(Color.yellow, "Поездки 9500 ₽"),
+            new Bubble(Color.green, "Archived 3100 ₽")
+        );
+  }
+
+  @User(
+      spendings = {
+          @Spend(
+              category = "Поездки",
+              description = "В Москву",
+              amount = 9500,
+              currency = CurrencyValues.RUB
+          ),
+          @Spend(
+              category = "Ремонт",
+              description = "Цемент",
+              amount = 100,
+              currency = CurrencyValues.KZT
+          ),
+          @Spend(
+              category = "Страховка",
+              description = "ОСАГО",
+              amount = 30.5,
+              currency = CurrencyValues.EUR
+          )
+      }
+  )
+  @Test
+  void checkSpendingTableTest(UserDataJson user) {
+    Selenide.open(CFG.frontUrl(), LoginPage.class)
+        .doLogin(user.username(), user.testData().password())
+        .checkSpendTable(user.testData().spends().toArray(SpendJson[]::new));
   }
 }
