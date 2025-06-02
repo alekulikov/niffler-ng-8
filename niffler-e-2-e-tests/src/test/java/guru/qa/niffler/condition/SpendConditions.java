@@ -37,7 +37,7 @@ public class SpendConditions {
       @Override
       public CheckResult check(Driver driver, List<WebElement> elements) {
         if (ArrayUtils.isEmpty(expectedSpendJsons)) {
-          throw new IllegalArgumentException("No expected bubbles given");
+          throw new IllegalArgumentException("No expected spends given");
         }
         if (expectedSpendJsons.length != elements.size()) {
           final String message = String.format("List size mismatch (expected: %s, actual: %s)", expectedSpendJsons.length, elements.size());
