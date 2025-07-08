@@ -12,6 +12,7 @@ import guru.qa.niffler.page.LoginPage;
 import org.junit.jupiter.api.Test;
 
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 @WebTest
 public class ProfileTest {
@@ -49,7 +50,7 @@ public class ProfileTest {
 
   @User
   @ScreenShotTest(value = "img/expected-avatar.png", rewriteExpected = true)
-  void checkProfileImageTest(UserDataJson user, BufferedImage expectedAvatar) {
+  void checkProfileImageTest(UserDataJson user, BufferedImage expectedAvatar) throws IOException {
     Selenide.open(CFG.frontUrl(), LoginPage.class)
         .doLogin(user.username(), user.testData().password())
         .goProfilePage()

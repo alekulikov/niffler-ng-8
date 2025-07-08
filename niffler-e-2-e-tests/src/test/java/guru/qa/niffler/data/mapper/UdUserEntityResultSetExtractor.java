@@ -6,11 +6,14 @@ import guru.qa.niffler.data.entity.userdata.UdUserEntity;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+@ParametersAreNonnullByDefault
 public class UdUserEntityResultSetExtractor implements ResultSetExtractor<List<UdUserEntity>> {
 
   public static final UdUserEntityResultSetExtractor instance = new UdUserEntityResultSetExtractor();
@@ -18,6 +21,7 @@ public class UdUserEntityResultSetExtractor implements ResultSetExtractor<List<U
   private UdUserEntityResultSetExtractor() {
   }
 
+  @Nonnull
   @Override
   public List<UdUserEntity> extractData(ResultSet rs) throws SQLException, DataAccessException {
     Map<UUID, UdUserEntity> usersMap = new ConcurrentHashMap<>();

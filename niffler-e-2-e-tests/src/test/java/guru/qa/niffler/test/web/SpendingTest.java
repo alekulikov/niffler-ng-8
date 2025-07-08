@@ -16,6 +16,7 @@ import guru.qa.niffler.page.LoginPage;
 import org.junit.jupiter.api.Test;
 
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 @WebTest
 public class SpendingTest {
@@ -50,7 +51,7 @@ public class SpendingTest {
       )
   )
   @ScreenShotTest(value = "img/expected-stat-edit.png", rewriteExpected = true)
-  void checkStatComponentAfterEditingTest(UserDataJson user, BufferedImage expected) {
+  void checkStatComponentAfterEditingTest(UserDataJson user, BufferedImage expected) throws IOException {
     Selenide.open(CFG.frontUrl(), LoginPage.class)
         .doLogin(user.username(), user.testData().password())
         .editSpending(user.testData().spends().getFirst().description())
@@ -68,7 +69,7 @@ public class SpendingTest {
       )
   )
   @ScreenShotTest(value = "img/expected-stat.png", rewriteExpected = true)
-  void checkStatComponentTest(UserDataJson user, BufferedImage expected) {
+  void checkStatComponentTest(UserDataJson user, BufferedImage expected) throws IOException {
     Selenide.open(CFG.frontUrl(), LoginPage.class)
         .doLogin(user.username(), user.testData().password())
         .checkStatisticDiagram(expected)
@@ -84,7 +85,7 @@ public class SpendingTest {
       )
   )
   @ScreenShotTest(value = "img/expected-stat-delete.png", rewriteExpected = true)
-  void checkStatComponentAfterDeletingSpendTest(UserDataJson user, BufferedImage expected) {
+  void checkStatComponentAfterDeletingSpendTest(UserDataJson user, BufferedImage expected) throws IOException {
     Selenide.open(CFG.frontUrl(), LoginPage.class)
         .doLogin(user.username(), user.testData().password())
         .deleteSpending(user.testData().spends().getFirst().description())
@@ -119,7 +120,7 @@ public class SpendingTest {
       }
   )
   @ScreenShotTest(value = "img/expected-stat-archived.png", rewriteExpected = true)
-  void checkStatComponentWithArchiveCategoryTest(UserDataJson user, BufferedImage expected) {
+  void checkStatComponentWithArchiveCategoryTest(UserDataJson user, BufferedImage expected) throws IOException {
     Selenide.open(CFG.frontUrl(), LoginPage.class)
         .doLogin(user.username(), user.testData().password())
         .checkStatisticDiagram(expected)

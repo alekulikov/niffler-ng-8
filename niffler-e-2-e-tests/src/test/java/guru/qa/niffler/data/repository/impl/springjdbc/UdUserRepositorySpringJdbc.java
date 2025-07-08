@@ -5,12 +5,14 @@ import guru.qa.niffler.data.entity.userdata.FriendshipStatus;
 import guru.qa.niffler.data.entity.userdata.UdUserEntity;
 import guru.qa.niffler.data.mapper.UdUserEntityResultSetExtractor;
 import guru.qa.niffler.data.repository.UdUserRepository;
-import guru.qa.niffler.data.tpl.DataSources;
+import guru.qa.niffler.data.jdbc.DataSources;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -19,10 +21,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@ParametersAreNonnullByDefault
 public class UdUserRepositorySpringJdbc implements UdUserRepository {
 
   private static final Config CFG = Config.getInstance();
 
+  @Nonnull
   @Override
   public UdUserEntity create(UdUserEntity user) {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
@@ -48,6 +52,7 @@ public class UdUserRepositorySpringJdbc implements UdUserRepository {
     return user;
   }
 
+  @Nonnull
   @Override
   public Optional<UdUserEntity> findById(UUID id) {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
@@ -62,6 +67,7 @@ public class UdUserRepositorySpringJdbc implements UdUserRepository {
     ).stream().findFirst();
   }
 
+  @Nonnull
   @Override
   public Optional<UdUserEntity> findByUsername(String username) {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
@@ -84,6 +90,7 @@ public class UdUserRepositorySpringJdbc implements UdUserRepository {
         user.getId(), user.getId());
   }
 
+  @Nonnull
   public List<UdUserEntity> findAll() {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
     return jdbcTemplate.query(
@@ -139,6 +146,7 @@ public class UdUserRepositorySpringJdbc implements UdUserRepository {
     );
   }
 
+  @Nonnull
   @Override
   public UdUserEntity update(UdUserEntity user) {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));

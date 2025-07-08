@@ -6,19 +6,24 @@ import guru.qa.niffler.data.dao.SpendDao;
 import guru.qa.niffler.data.entity.spend.CategoryEntity;
 import guru.qa.niffler.data.entity.spend.SpendEntity;
 import guru.qa.niffler.model.CurrencyValues;
+import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static guru.qa.niffler.data.tpl.Connections.holder;
+import static guru.qa.niffler.data.jdbc.Connections.holder;
 
+@SuppressWarnings("resource")
+@ParametersAreNonnullByDefault
 public class SpendDaoJdbc implements SpendDao {
 
   private static final Config CFG = Config.getInstance();
 
+  @NotNull
   @Override
   public SpendEntity create(SpendEntity spend) {
     try (PreparedStatement ps = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
@@ -50,6 +55,7 @@ public class SpendDaoJdbc implements SpendDao {
     }
   }
 
+  @NotNull
   @Override
   public Optional<SpendEntity> findSpendById(UUID id) {
     try (PreparedStatement ps = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
@@ -80,6 +86,7 @@ public class SpendDaoJdbc implements SpendDao {
     return Optional.empty();
   }
 
+  @NotNull
   @Override
   public List<SpendEntity> findAllByUsername(String username) {
     try (PreparedStatement ps = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
@@ -123,6 +130,7 @@ public class SpendDaoJdbc implements SpendDao {
     }
   }
 
+  @NotNull
   @Override
   public List<SpendEntity> findAll() {
     try (PreparedStatement ps = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
@@ -153,6 +161,7 @@ public class SpendDaoJdbc implements SpendDao {
     }
   }
 
+  @NotNull
   @Override
   public Optional<SpendEntity> findByUsernameAndSpendDescription(String username, String description) {
     try (PreparedStatement ps = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
@@ -184,6 +193,7 @@ public class SpendDaoJdbc implements SpendDao {
     return Optional.empty();
   }
 
+  @NotNull
   @Override
   public SpendEntity update(SpendEntity spend) {
     try (PreparedStatement ps = holder(CFG.spendJdbcUrl()).connection().prepareStatement(

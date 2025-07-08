@@ -3,12 +3,16 @@ package guru.qa.niffler.jupiter.extension;
 import io.qameta.allure.Allure;
 import io.qameta.allure.AllureLifecycle;
 import io.qameta.allure.model.TestResult;
-import lombok.SneakyThrows;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
 
+@ParametersAreNonnullByDefault
 public class AllureBackendLogsExtension implements SuiteExtension {
 
   public static final String caseName = "Niffler backend logs";
@@ -30,15 +34,24 @@ public class AllureBackendLogsExtension implements SuiteExtension {
     allureLifecycle.writeTestCase(caseId);
   }
 
-  @SneakyThrows
   private void addLogAttachment(String serviceName) {
-    Allure.getLifecycle().addAttachment(
-        String.format("%s-log", serviceName),
-        "text/html",
-        ".log",
-        Files.newInputStream(
-            Path.of(String.format("./logs/%s/app.log", serviceName))
-        )
-    );
+    try (InputStream is = Files.newInputStream(Path.of(String.format("./logs/%s/app.log", serviceName)))) {
+      Allure.getLifecycle().addAttachment(
+          String.format("%s-log", serviceName),
+          "text/html",
+          ".log",
+          is
+      );
+    } catch (Exception e) {
+      Allure.getLifecycle().addAttachment(
+          String.format("%s-log", serviceName),
+          "text/html",
+          ".log",
+          new ByteArrayInputStream(
+              ("Failed to attach log: " + e.getMessage())
+                  .getBytes(StandardCharsets.UTF_8)
+          )
+      );
+    }
   }
 }

@@ -5,9 +5,13 @@ import com.codeborne.selenide.SelenideElement;
 import com.codeborne.selenide.WebDriverRunner;
 import org.openqa.selenium.By;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import static com.codeborne.selenide.Selenide.$;
 
-public class LoginPage {
+@ParametersAreNonnullByDefault
+public class LoginPage extends BasePage<LoginPage> {
 
   private final SelenideElement usernameInput;
   private final SelenideElement passwordInput;
@@ -29,6 +33,7 @@ public class LoginPage {
     this.registerLink = $(By.linkText("Create new account"));
   }
 
+  @Nonnull
   public MainPage doLogin(String username, String password) {
     usernameInput.setValue(username);
     passwordInput.setValue(password);
@@ -36,6 +41,7 @@ public class LoginPage {
     return new MainPage();
   }
 
+  @Nonnull
   public RegisterPage goRegisterPage() {
     registerLink.click();
     return new RegisterPage();

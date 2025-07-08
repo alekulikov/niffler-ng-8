@@ -4,11 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import guru.qa.niffler.jupiter.annotation.ScreenShotTest;
 import guru.qa.niffler.model.allure.ScreenDiff;
 import io.qameta.allure.Allure;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.springframework.core.io.ClassPathResource;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -16,6 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Base64;
 
+@ParametersAreNonnullByDefault
 public class ScreenShotTestExtension implements ParameterResolver, TestExecutionExceptionHandler {
 
   public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(ScreenShotTestExtension.class);
@@ -30,13 +33,16 @@ public class ScreenShotTestExtension implements ParameterResolver, TestExecution
         parameterContext.getParameter().getType().isAssignableFrom(BufferedImage.class);
   }
 
-  @SneakyThrows
   @Override
   public BufferedImage resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-    return ImageIO.read(new ClassPathResource(extensionContext.getRequiredTestMethod()
-        .getAnnotation(ScreenShotTest.class).value())
-        .getInputStream()
-    );
+    try {
+      return ImageIO.read(new ClassPathResource(extensionContext.getRequiredTestMethod()
+          .getAnnotation(ScreenShotTest.class).value())
+          .getInputStream()
+      );
+    } catch (IOException e) {
+      throw new ParameterResolutionException("Failed to load image for test parameter", e);
+    }
   }
 
   @Override
@@ -76,6 +82,7 @@ public class ScreenShotTestExtension implements ParameterResolver, TestExecution
     TestsMethodContextExtension.context().getStore(NAMESPACE).put("actual", actual);
   }
 
+  @Nullable
   public static BufferedImage getActual() {
     return TestsMethodContextExtension.context().getStore(NAMESPACE).get("actual", BufferedImage.class);
   }
@@ -84,10 +91,12 @@ public class ScreenShotTestExtension implements ParameterResolver, TestExecution
     TestsMethodContextExtension.context().getStore(NAMESPACE).put("diff", diff);
   }
 
+  @Nullable
   public static BufferedImage getDiff() {
     return TestsMethodContextExtension.context().getStore(NAMESPACE).get("diff", BufferedImage.class);
   }
 
+  @Nonnull
   private static byte[] imageToBytes(BufferedImage image) {
     try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
       ImageIO.write(image, "png", outputStream);

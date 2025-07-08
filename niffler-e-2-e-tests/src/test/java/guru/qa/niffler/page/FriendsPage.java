@@ -4,12 +4,16 @@ import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import org.openqa.selenium.By;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import static com.codeborne.selenide.CollectionCondition.empty;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.*;
 
-public class FriendsPage {
+@ParametersAreNonnullByDefault
+public class FriendsPage extends BasePage<FriendsPage> {
 
   private final ElementsCollection friends = $$("#friends tr");
   private final ElementsCollection incomeRequests = $$("#requests tr");
@@ -17,6 +21,7 @@ public class FriendsPage {
   private final ElementsCollection people = $$("#all tr");
   private final SelenideElement peopleSearch = $("input[placeholder='Search']");
 
+  @Nonnull
   public FriendsPage checkThatFriendsContains(String... usernames) {
     for (String username : usernames) {
       filterPeopleByUsername(username);
@@ -25,11 +30,13 @@ public class FriendsPage {
     return this;
   }
 
+  @Nonnull
   public FriendsPage checkThatFriendsEmpty() {
     friends.shouldBe(empty);
     return this;
   }
 
+  @Nonnull
   public FriendsPage checkThatIncomeRequestsContains(String... usernames) {
     for (String username : usernames) {
       filterPeopleByUsername(username);
@@ -38,11 +45,13 @@ public class FriendsPage {
     return this;
   }
 
+  @Nonnull
   public FriendsPage selectAllPeopleTab() {
     allPeopleTab.click();
     return this;
   }
 
+  @Nonnull
   public FriendsPage checkThatOutcomeRequestsContains(String... usernames) {
     for (String username : usernames) {
       filterPeopleByUsername(username);
@@ -53,6 +62,7 @@ public class FriendsPage {
     return this;
   }
 
+  @Nonnull
   public FriendsPage filterPeopleByUsername(String username) {
     executeJavaScript("arguments[0].value = '';", peopleSearch);
     peopleSearch.setValue(username).pressEnter();

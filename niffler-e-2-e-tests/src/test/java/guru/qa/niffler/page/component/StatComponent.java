@@ -1,4 +1,4 @@
-package guru.qa.niffler.page;
+package guru.qa.niffler.page.component;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
@@ -6,8 +6,9 @@ import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.jupiter.extension.ScreenShotTestExtension;
 import guru.qa.niffler.model.Bubble;
 import guru.qa.niffler.utils.ScreenDiffResult;
-import lombok.SneakyThrows;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -17,14 +18,15 @@ import static guru.qa.niffler.condition.StatConditions.bubbles;
 import static java.util.Objects.requireNonNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
+@ParametersAreNonnullByDefault
 public class StatComponent {
 
   public final SelenideElement self = $("#stat");
   private final ElementsCollection bubbles = self.$("#legend-container").$$("li");
   private final SelenideElement statisticDiagram = $("canvas[role='img']");
 
-  @SneakyThrows
-  public StatComponent checkStatisticDiagram(BufferedImage expected) {
+  @Nonnull
+  public StatComponent checkStatisticDiagram(BufferedImage expected) throws IOException {
     Selenide.sleep(3000);
     assertFalse(new ScreenDiffResult(
             statisticDiagramScreenshot(),
@@ -34,6 +36,7 @@ public class StatComponent {
     return this;
   }
 
+  @Nonnull
   public StatComponent checkBubbles(Bubble... expectedBubbles) {
     bubbles.should(bubbles(expectedBubbles));
     return this;

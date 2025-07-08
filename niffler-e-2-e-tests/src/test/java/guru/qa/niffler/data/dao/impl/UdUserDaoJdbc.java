@@ -3,7 +3,9 @@ package guru.qa.niffler.data.dao.impl;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.UdUserDao;
 import guru.qa.niffler.data.entity.userdata.UdUserEntity;
+import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,12 +15,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static guru.qa.niffler.data.tpl.Connections.holder;
+import static guru.qa.niffler.data.jdbc.Connections.holder;
 
+@SuppressWarnings("resource")
+@ParametersAreNonnullByDefault
 public class UdUserDaoJdbc implements UdUserDao {
 
   private static final Config CFG = Config.getInstance();
 
+  @NotNull
   @Override
   public UdUserEntity create(UdUserEntity user) {
     try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
@@ -49,6 +54,7 @@ public class UdUserDaoJdbc implements UdUserDao {
     }
   }
 
+  @NotNull
   @Override
   public Optional<UdUserEntity> findById(UUID id) {
     try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
@@ -75,6 +81,7 @@ public class UdUserDaoJdbc implements UdUserDao {
     return Optional.empty();
   }
 
+  @NotNull
   @Override
   public Optional<UdUserEntity> findByUsername(String username) {
     try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
@@ -113,6 +120,7 @@ public class UdUserDaoJdbc implements UdUserDao {
     }
   }
 
+  @NotNull
   @Override
   public List<UdUserEntity> findAll() {
     try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(

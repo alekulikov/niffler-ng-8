@@ -1,8 +1,12 @@
-package guru.qa.niffler.page;
+package guru.qa.niffler.page.component;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.model.SpendJson;
+import guru.qa.niffler.page.EditSpendingPage;
+
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
@@ -11,6 +15,7 @@ import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.executeJavaScript;
 import static guru.qa.niffler.condition.SpendConditions.spends;
 
+@ParametersAreNonnullByDefault
 public class SpendTable {
 
   public final SelenideElement self = $("#spendings");
@@ -19,6 +24,7 @@ public class SpendTable {
   private final SelenideElement deleteBtn = $("#delete");
   private final SelenideElement dialogWindow = $("div[role='dialog']");
 
+  @Nonnull
   public EditSpendingPage editSpending(String spendingDescription) {
     filterSpendingsByDescription(spendingDescription);
     spends.find(text(spendingDescription))
@@ -28,6 +34,7 @@ public class SpendTable {
     return new EditSpendingPage();
   }
 
+  @Nonnull
   public SpendTable deleteSpending(String spendingDescription) {
     spends.find(text(spendingDescription))
         .$$("td")
@@ -43,12 +50,14 @@ public class SpendTable {
         .should(visible);
   }
 
+  @Nonnull
   public SpendTable filterSpendingsByDescription(String spendingDescription) {
     executeJavaScript("arguments[0].value = '';", spendingSearch);
     spendingSearch.setValue(spendingDescription).pressEnter();
     return this;
   }
 
+  @Nonnull
   public SpendTable checkSpendTable(SpendJson... expectedSpends) {
     spends.shouldHave(spends(expectedSpends));
     return this;

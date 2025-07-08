@@ -9,11 +9,16 @@ import guru.qa.niffler.service.impl.SpendDbClient;
 import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static guru.qa.niffler.utils.RandomDataUtils.randomCategoryName;
 
+@ParametersAreNonnullByDefault
 public class CategoryExtension implements
     BeforeEachCallback,
     ParameterResolver {
@@ -72,8 +77,14 @@ public class CategoryExtension implements
   @Override
   @SuppressWarnings("unchecked")
   public CategoryJson[] resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-    return (CategoryJson[]) extensionContext.getStore(NAMESPACE)
-        .get(extensionContext.getUniqueId(), List.class)
-        .toArray(CategoryJson[]::new);
+    return createdCategories().toArray(CategoryJson[]::new);
+  }
+
+  @Nonnull
+  @SuppressWarnings("unchecked")
+  public static List<CategoryJson> createdCategories() {
+    final ExtensionContext context = TestsMethodContextExtension.context();
+    return Optional.ofNullable(context.getStore(NAMESPACE).get(context.getUniqueId(), List.class))
+        .orElse(Collections.emptyList());
   }
 }

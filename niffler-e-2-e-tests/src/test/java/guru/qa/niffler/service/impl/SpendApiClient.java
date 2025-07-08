@@ -14,8 +14,12 @@ import retrofit2.converter.jackson.JacksonConverterFactory;
 
 import java.io.IOException;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@ParametersAreNonnullByDefault
 public class SpendApiClient implements SpendClient {
 
   private static final Config CFG = Config.getInstance();
@@ -33,6 +37,7 @@ public class SpendApiClient implements SpendClient {
 
   private final SpendApi spendApi = retrofit.create(SpendApi.class);
 
+  @Nonnull
   public SpendJson createSpend(SpendJson spend) {
     Response<SpendJson> response = execute(
         spendApi.addSpend(spend),
@@ -41,6 +46,7 @@ public class SpendApiClient implements SpendClient {
     return response.body();
   }
 
+  @Nonnull
   public CategoryJson createCategory(CategoryJson category) {
     Response<CategoryJson> response = execute(
         spendApi.addCategory(category),
@@ -49,6 +55,7 @@ public class SpendApiClient implements SpendClient {
     return response.body();
   }
 
+  @Nonnull
   public CategoryJson updateCategory(CategoryJson category) {
     Response<CategoryJson> response = execute(
         spendApi.updateCategory(category),

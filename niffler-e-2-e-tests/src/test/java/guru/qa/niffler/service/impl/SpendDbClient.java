@@ -10,6 +10,10 @@ import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.service.SpendClient;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
+
+@ParametersAreNonnullByDefault
 public class SpendDbClient implements SpendClient {
 
   private static final Config CFG = Config.getInstance();
@@ -17,18 +21,21 @@ public class SpendDbClient implements SpendClient {
   private final SpendRepository spendRepository = new SpendRepositoryHibernate();
   private final XaTransactionTemplate xaTransactionTemplate = new XaTransactionTemplate(CFG.spendJdbcUrl());
 
+  @Nonnull
   public SpendJson createSpend(SpendJson spend) {
     return xaTransactionTemplate.execute(() ->
         SpendJson.fromEntity(spendRepository.create(SpendEntity.fromJson(spend)))
     );
   }
 
+  @Nonnull
   public CategoryJson createCategory(CategoryJson category) {
     return xaTransactionTemplate.execute(() ->
         CategoryJson.fromEntity(spendRepository.createCategory(CategoryEntity.fromJson(category)))
     );
   }
 
+  @Nonnull
   public CategoryJson updateCategory(CategoryJson category) {
     return xaTransactionTemplate.execute(() ->
         CategoryJson.fromEntity(spendRepository.updateCategory(CategoryEntity.fromJson(category)))

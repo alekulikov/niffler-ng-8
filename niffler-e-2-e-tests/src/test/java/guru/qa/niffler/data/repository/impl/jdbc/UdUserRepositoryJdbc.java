@@ -6,16 +6,21 @@ import guru.qa.niffler.data.entity.userdata.UdUserEntity;
 import guru.qa.niffler.data.mapper.UdUserEntityResultSetExtractor;
 import guru.qa.niffler.data.repository.UdUserRepository;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.sql.*;
 import java.util.Optional;
 import java.util.UUID;
 
-import static guru.qa.niffler.data.tpl.Connections.holder;
+import static guru.qa.niffler.data.jdbc.Connections.holder;
 
+@SuppressWarnings("resource")
+@ParametersAreNonnullByDefault
 public class UdUserRepositoryJdbc implements UdUserRepository {
 
   private static final Config CFG = Config.getInstance();
 
+  @Nonnull
   @Override
   public UdUserEntity create(UdUserEntity user) {
     try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
@@ -46,6 +51,7 @@ public class UdUserRepositoryJdbc implements UdUserRepository {
     }
   }
 
+  @Nonnull
   @Override
   public Optional<UdUserEntity> findById(UUID id) {
     try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
@@ -65,6 +71,7 @@ public class UdUserRepositoryJdbc implements UdUserRepository {
     }
   }
 
+  @Nonnull
   @Override
   public Optional<UdUserEntity> findByUsername(String username) {
     try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
@@ -145,6 +152,7 @@ public class UdUserRepositoryJdbc implements UdUserRepository {
     }
   }
 
+  @Nonnull
   @Override
   public UdUserEntity update(UdUserEntity user) {
     try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(

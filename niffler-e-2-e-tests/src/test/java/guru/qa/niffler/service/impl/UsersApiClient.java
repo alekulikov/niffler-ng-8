@@ -13,9 +13,13 @@ import retrofit2.converter.jackson.JacksonConverterFactory;
 
 import java.io.IOException;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import static guru.qa.niffler.utils.RandomDataUtils.randomUsername;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@ParametersAreNonnullByDefault
 public class UsersApiClient implements UsersClient {
 
   private static final Config CFG = Config.getInstance();
@@ -34,6 +38,7 @@ public class UsersApiClient implements UsersClient {
 
   private final UserApi userApi = retrofit.create(UserApi.class);
 
+  @Nonnull
   @Override
   public UserDataJson createUser(String username, String password) {
     throw new UnsupportedOperationException("Not supported yet.");

@@ -3,23 +3,28 @@ package guru.qa.niffler.data.dao.impl;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.UdUserDao;
 import guru.qa.niffler.data.entity.userdata.UdUserEntity;
+import guru.qa.niffler.data.jdbc.DataSources;
 import guru.qa.niffler.data.mapper.UdUserEntityRowMapper;
-import guru.qa.niffler.data.tpl.DataSources;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
+@ParametersAreNonnullByDefault
 public class UdUserDaoSpringJdbc implements UdUserDao {
 
   private static final Config CFG = Config.getInstance();
 
+  @NotNull
   @Override
   public UdUserEntity create(UdUserEntity user) {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
@@ -40,11 +45,12 @@ public class UdUserDaoSpringJdbc implements UdUserDao {
       return ps;
     }, kh);
 
-    final UUID generatedKey = (UUID) kh.getKeys().get("id");
+    final UUID generatedKey = (UUID) Objects.requireNonNull(kh.getKeys()).get("id");
     user.setId(generatedKey);
     return user;
   }
 
+  @NotNull
   @Override
   public Optional<UdUserEntity> findById(UUID id) {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
@@ -61,6 +67,7 @@ public class UdUserDaoSpringJdbc implements UdUserDao {
     }
   }
 
+  @NotNull
   @Override
   public Optional<UdUserEntity> findByUsername(String username) {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
@@ -83,6 +90,7 @@ public class UdUserDaoSpringJdbc implements UdUserDao {
     jdbcTemplate.update("DELETE FROM \"user\" WHERE id = ?", user.getId());
   }
 
+  @NotNull
   @Override
   public List<UdUserEntity> findAll() {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));

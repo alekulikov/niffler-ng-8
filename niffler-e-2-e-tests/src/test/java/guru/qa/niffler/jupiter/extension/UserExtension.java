@@ -8,9 +8,11 @@ import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
 
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 import static guru.qa.niffler.utils.RandomDataUtils.randomUsername;
 
+@ParametersAreNonnullByDefault
 public class UserExtension implements
     BeforeEachCallback,
     ParameterResolver {
@@ -47,7 +49,8 @@ public class UserExtension implements
     return createdUser();
   }
 
-  public static @Nullable UserDataJson createdUser() {
+  @Nullable
+  public static UserDataJson createdUser() {
     ExtensionContext context = TestsMethodContextExtension.context();
     return context.getStore(NAMESPACE).get(context.getUniqueId(), UserDataJson.class);
   }
